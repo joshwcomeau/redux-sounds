@@ -1,6 +1,6 @@
 {
   "name": "redux-sounds",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Sound effect middleware for Redux.",
   "main": "lib/index.js",
   "files": [
