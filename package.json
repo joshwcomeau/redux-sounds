@@ -26,6 +26,9 @@
   ],
   "author": "Joshua Comeau <joshwcomeau@gmail.com>",
   "license": "MIT",
+  "dependencies": {
+    "howler": "^1.1.28"
+  },
   "devDependencies": {
     "babel": "^6.1.18",
     "babel-cli": "^6.2.0",
