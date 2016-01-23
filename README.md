@@ -32,7 +32,7 @@ npm i -S redux-sounds
 Here's an example setup:
 
 ```js
-// configure-store.js
+/* configure-store.js */
 
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import soundsMiddleware from 'redux-sounds';
@@ -75,7 +75,7 @@ Using the convention established in the [rafScheduler Middleware example](https:
 If the setup process above was followed, we have two sounds we can trigger: `endTurn` and `winGame`. To trigger:
 
 ```js
-// game-actions.js
+/* game-actions.js */
 
 export function endTurn() {
   return {
@@ -84,18 +84,27 @@ export function endTurn() {
   }
 }
 
+export function winGame() {
+  return {
+    type: 'WIN_GAME',
+    meta: { sound: 'winGame' }
+  }
+}
+
 ```
+
+It is worth noting that it is unlikely that you'll need to create new actions for your sound effects; You'll probably want to just add `meta` properties to pre-existing actions, so that they play a sound in addition to whatever else they do (change the reducer state, trigger other middleware, etc).
 
 
 ## Troubleshooting
 
-#### I got a console warning like:
+#### I get a console warning when I dispatch an action.
 
-    ```
+When you dispatch an action with a `meta.sound` property, redux-sounds looks for a registered sound under that name. If it cannot find one, you'll get a console warning:
+
     The sound 'foo' was requested, but redux-sounds doesn't have anything registered under that name.
-    ```
 
-This warning happens when you dispatch an action with a `meta.sound` property that wasn't registered.
+To understand why this is happening, let's examine the link between registering a sound when the store is created, and triggering a sound when an action is dispatched.
 
 When you create your store, you pass in an object like so:
 ```js
