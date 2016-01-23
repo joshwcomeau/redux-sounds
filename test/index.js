@@ -89,7 +89,7 @@ describe('soundMiddleware', () => {
 
   describe('initialization', () => {
     it('throws when initialized without sounds', () => {
-      expect(soundMiddleware).to.throw({ name: 'missingSoundDataaaa'});
+      expect(soundMiddleware).to.throw();
     });
   });
 
