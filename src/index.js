@@ -8,7 +8,7 @@ function soundsMiddleware(soundsData) {
       message: `
         Please provide an object to soundsMiddleware!
         When initializing, it needs an object holding all desired sound data.
-        See https://github.com/joshwcomeau/redux-sounds
+        See https://github.com/joshwcomeau/redux-sounds/#troubleshooting
       `
     };
 
@@ -29,8 +29,8 @@ function soundsMiddleware(soundsData) {
     // Check to make sure the sound exists.
     if ( typeof sounds[soundName] === 'undefined' ) {
       console.warn(`
-        The sound effect '${soundName}' was requested, but not included in the
-        list of sound effects. Please check sound_effects.lib.js.
+        The sound '${soundName}' was requested, but redux-sounds doesn't have anything registered under that name.
+        See https://github.com/joshwcomeau/redux-sounds/#troubleshooting
       `);
 
       return next(action);
