@@ -21,9 +21,17 @@ Uses [Howler.js](https://github.com/goldfire/howler.js/) under the hood, which u
 
 ## Installation
 
+### Preferred: NPM
+
 ```js
 npm i -S redux-sounds
 ```
+
+
+### Also available: UMD
+
+UMD builds are also available, for single-file usage or quick hacking in a JSbin. Simply add `dist/redux-sounds.js` or `dist/redux-sounds.min.js` to your file in a `<script>` tag. The middleware will be available under `ReduxSounds`.
+
 
 ## Setup
 
@@ -60,7 +68,8 @@ const soundsData = {
 const loadedSoundsMiddleware = soundsMiddleware(soundsData);
 
 // Use as you would any other middleware.
-const store = applyMiddleware(loadedSoundsMiddleware)(createStore)(gameReducer);
+const store = createStore(gameReducer, applyMiddleware(loadedSoundsMiddleware));
+// (Using the condensed createStore released in Redux v3.1.0)
 ```
 
 Howler has much more advanced capabilities, including using sound sprites, specifying callbacks to run when the sound has completed, looping sounds, fading in/out, and much more. See [their documentation](https://github.com/goldfire/howler.js/#properties) for the complete list.
@@ -130,7 +139,7 @@ Unlike other middleware, you cannot simply pass it to Redux as-is:
 import soundsMiddleware from 'redux-sounds';
 
 // DON'T do this:
-const createStoreWithMiddleware = applyMiddleware(soundsMiddleware)(createStore);
+const store = createStore(rootReducer, applyMiddleware(soundsMiddleware));
 ```
 
 The reason for this is that before the store can be registered, you need to pass it data about which sounds it needs to handle.
@@ -144,7 +153,7 @@ import { soundsData } from '../data/sounds';
 // Important step:
 const loadedSoundsMiddleware = soundsMiddleware(soundsData);
 
-const createStoreWithMiddleware = applyMiddleware(loadedSoundsMiddleware)(createStore);
+const store = createStore(rootReducer, applyMiddleware(loadedSoundsMiddleware));
 ```
 
 ## Planned functionality
