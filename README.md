@@ -49,8 +49,7 @@ import { gameReducer } from '../reducers/game-reducer';
 
 // Our soundsData is an object. The keys are the names of our sounds.
 const soundsData = {
-  // If no additional configuration is necessary, we can just pass a string
-  // as the path to our file.
+  // If no additional configuration is necessary, we can just pass a string  as the path to our file.
   endTurn: 'https://s3.amazonaws.com/bucketName/end_turn.mp3',
 
   // Alternatively, we can pass a configuration object.
@@ -61,6 +60,17 @@ const soundsData = {
       'https://s3.amazonaws.com/bucketName/win_game.wav'
     ],
     volume: 0.75
+  },
+
+  // Audio sprites are supported. They follow the Howler.js spec.
+  jumps: {
+    urls: [ 'https://s3.amazonaws.com/bucketName/jumps.mp3' ],
+    sprite: {
+      // These numbers are the start/stop times, in milliseconds.
+      lowJump: [0, 1000],
+      longJump: [1000, 2500],
+      antiGravityJump: [3000, 4500]
+    }
   }
 }
 
@@ -72,7 +82,7 @@ const store = createStore(gameReducer, applyMiddleware(loadedSoundsMiddleware));
 // (Using the condensed createStore released in Redux v3.1.0)
 ```
 
-Howler has much more advanced capabilities, including using sound sprites, specifying callbacks to run when the sound has completed, looping sounds, fading in/out, and much more. See [their documentation](https://github.com/goldfire/howler.js/#properties) for the complete list.
+Howler has much more advanced capabilities, including specifying callbacks to run when the sound has completed (or failed to complete), looping sounds, fading in/out, and much more. See [their documentation](https://github.com/goldfire/howler.js/#properties) for the complete list.
 
 
 ## Usage
@@ -81,7 +91,9 @@ Once your store is created, dispatching actions that trigger sounds is simple.
 
 Using the convention established in the [rafScheduler Middleware example](https://github.com/rackt/redux/blob/46083e73d952feb367bf3fa4e13c1e419a224100/docs/advanced/Middleware.md#seven-examples), a new `meta` property can be attached to actions. This `meta` property should have a `sound` key, and its value should be that of a registered sound.
 
-If the setup process above was followed, we have two sounds we can trigger: `endTurn` and `winGame`. To trigger:
+Continuing from our example above, we have 5 possible sounds: `endTurn`, `winGame`, and 3 flavors of jumps.
+
+For sprites, separate the sound name from the sprite name with a period (`.`). A couple examples of the actions we can dispatch:
 
 ```js
 /* game-actions.js */
@@ -93,21 +105,21 @@ export function endTurn() {
   }
 }
 
-export function winGame() {
+export function lowJump() {
   return {
-    type: 'WIN_GAME',
-    meta: { sound: 'winGame' }
+    type: 'LOW_JUMP',
+    meta: { sound: 'jumps.lowJump' }
   }
 }
 
 ```
 
-It is worth noting that it is unlikely that you'll need to create new actions for your sound effects; You'll probably want to just add `meta` properties to pre-existing actions, so that they play a sound in addition to whatever else they do (change the reducer state, trigger other middleware, etc).
+_**Note:**It is worth noting that it is unlikely that you'll need to create new actions for your sound effects; You'll probably want to just add `meta` properties to pre-existing actions, so that they play a sound in addition to whatever else they do (change the reducer state, trigger other middleware, etc)._
 
 
 ## Troubleshooting
 
-#### I get a console warning when I dispatch an action.
+#### Unregistered sound
 
 When you dispatch an action with a `meta.sound` property, redux-sounds looks for a registered sound under that name. If it cannot find one, you'll get a console warning:
 
@@ -131,6 +143,18 @@ dispatch({
 ```
 
 Make sure these two values are the same!
+
+
+#### Invalid sprite
+
+When your `meta.sound` value has a period in it (eg. `foo.bar`), redux-sounds breaks it apart so that the first half is the sound name, and the second half is the sprite name.
+
+If redux-sounds has a sound registered under 'foo', but that sound has no specified sprite for 'bar', you get a console warning that resembles:
+
+    The sound 'foo' was found, but it does not have a sprite specified for 'bar'.
+
+It is possible that there is a typo, either in the `meta.sound` property or the sprite data passed in on initialization.
+
 
 #### A `missingSoundData` error throws when I try loading the page.
 
@@ -165,7 +189,7 @@ Got ideas for must-have functionality? Create an issue and let's discuss =)
 
 ## Contributions
 
-Contributors welcome!
+Contributors welcome! Please discuss additional features with me before implementing them, and please supply tests along with any bug fixes.
 
 
 ## License

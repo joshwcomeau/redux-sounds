@@ -29,7 +29,7 @@ module.exports = {
     if ( typeof sound === 'undefined' ) {
       return console.warn(`
         The sound '${soundName}' was requested, but redux-sounds doesn't have anything registered under that name.
-        See https://github.com/joshwcomeau/redux-sounds/#troubleshooting
+        See https://github.com/joshwcomeau/redux-sounds#unregistered-sound
       `);
     } else if ( spriteName && typeof sound._sprite[spriteName] === 'undefined' ) {
       const validSprites = Object.keys(sound._sprite).join(', ');
@@ -37,7 +37,7 @@ module.exports = {
       return console.warn(`
         The sound '${soundName}' was found, but it does not have a sprite specified for '${spriteName}'.
         It only has access to the following sprites: ${validSprites}.
-        See https://github.com/joshwcomeau/redux-sounds/#troubleshooting
+        See https://github.com/joshwcomeau/redux-sounds#invalid-sprite
       `);
     }
 
