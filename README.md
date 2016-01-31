@@ -63,10 +63,12 @@ const soundsData = {
   },
 
   // Audio sprites are supported. They follow the Howler.js spec.
+  // Each sprite has an array with two numbers:
+  //   - the start time of the sound, in milliseconds
+  //   - the duration of the sound, in milliseconds
   jumps: {
     urls: [ 'https://s3.amazonaws.com/bucketName/jumps.mp3' ],
     sprite: {
-      // These numbers are the start/stop times, in milliseconds.
       lowJump: [0, 1000],
       longJump: [1000, 2500],
       antiGravityJump: [3000, 4500]
