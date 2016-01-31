@@ -1,3 +1,9 @@
+// Test suite coverage
+// Sadly, Howler.js will not try to load or play any sounds when there is
+// no audio environment available. Node has no audio environment.
+// We'll test the middleware instantiation, how it handles actions, whether
+// it hands the right data to Howler, and some other configuration stuff.
+//
 import chai, { expect }   from 'chai';
 import { Howl }           from 'howler';
 import sinon              from 'sinon';
@@ -9,25 +15,34 @@ import howlerIntegration  from '../src/howler_integration';
 chai.use(sinonChai);
 
 
-describe('howlerIntegration', () => {
-  const soundsData = {
-    endTurn: 'path/to/sound.mp3',
-    winGame: {
-      urls:   ['path/to/other_sound.mp3'],
-      volume: 0.75
+const soundsData = {
+  endTurn: 'path/to/sound.mp3',
+  winGame: {
+    urls:   ['path/to/other_sound.mp3'],
+    volume: 0.75
+  },
+  allSounds: {
+    urls: ['sound1.mp3'],
+    sprite: {
+      boom:   [0, 1000],
+      bang:   [1500, 2000],
+      crash:  [2000,2345]
     }
-  };
+  }
+};
 
+
+describe('howlerIntegration', () => {
   const sounds      = howlerIntegration.initialize(soundsData);
   const soundNames  = Object.keys(sounds);
   const soundValues = soundNames.map( name => sounds[name] );
 
   let actual, expected;
 
-  describe('initialization', () => {
+  describe('#initialize', () => {
     it('contains keys for each sound name', () => {
-      expected = ['endTurn', 'winGame'];
-      actual   = soundNames;
+      expected  = ['endTurn', 'winGame', 'allSounds'];
+      actual    = soundNames;
 
       expect(expected).to.deep.equal(actual);
     });
@@ -39,22 +54,29 @@ describe('howlerIntegration', () => {
     });
 
     it('set up the URL for endTurn (string-based)', () => {
-      expected = [ 'path/to/sound.mp3' ];
-      actual   = sounds.endTurn._urls;
+      expected  = [ 'path/to/sound.mp3' ];
+      actual    = sounds.endTurn._urls;
 
       expect(expected).to.deep.equal(actual);
     });
 
     it('set up the URL for winGame (property-based)', () => {
-      expected = [ 'path/to/other_sound.mp3' ];
-      actual   = sounds.winGame._urls;
+      expected  = [ 'path/to/other_sound.mp3' ];
+      actual    = sounds.winGame._urls;
 
       expect(expected).to.deep.equal(actual);
     });
 
     it('set up the volume for winGame (property-based)', () => {
-      expected = 0.75;
-      actual   = sounds.winGame._volume;
+      expected  = 0.75;
+      actual    = sounds.winGame._volume;
+
+      expect(expected).to.deep.equal(actual);
+    });
+
+    it('set up the sprites for allSounds', () => {
+      expected  = { boom: [0, 1000], bang: [1500, 2000], crash: [2000,2345] };
+      actual    = sounds.allSounds._sprite;
 
       expect(expected).to.deep.equal(actual);
     });
@@ -65,17 +87,10 @@ describe('howlerIntegration', () => {
       })
     });
   });
-
-  describe('triggering sounds', () => {
-    it('by name', () => {
-
-    })
-  })
 });
 
 
 describe('soundMiddleware', () => {
-  const soundsData  = { winGame: 'winGame.mp3' };
   const next        = sinon.spy();
   const consoleStub = sinon.stub(console, 'warn');
 
@@ -113,6 +128,22 @@ describe('soundMiddleware', () => {
   });
 
   describe('dispatching actions', () => {
+    it('console.warns when the sound is not found', () => {
+      const action = { name: 'LOSE_GAME', meta: { sound: 'loseGame'} };
+      actionHandler(action);
+
+      expect(consoleStub).to.have.been.calledOnce;
+      expect(next).to.have.been.calledOnce;
+    });
+
+    it('console.warns when the sound is found, but not the sprite', () => {
+      const action = { name: 'CLANG', meta: { sound: 'allSounds.clang'} };
+      actionHandler(action);
+
+      expect(consoleStub).to.have.been.calledOnce;
+      expect(next).to.have.been.calledOnce;
+    });
+
     it('forwards actions with no meta.sound', () => {
       const action = { name: 'UNRELATED_ACTION' };
       actionHandler(action);
@@ -122,20 +153,64 @@ describe('soundMiddleware', () => {
     });
 
     it('forwards actions with meta.sound', () => {
-      // The actual playing of the sound is tested in howlerIntegration above.
       const action = { name: 'WIN_GAME', meta: { sound: 'winGame'} };
       actionHandler(action);
 
       expect(consoleStub).to.not.have.been.called;
       expect(next).to.have.been.calledOnce;
     });
+  });
 
-    it('console.warns when the sound is not found', () => {
-      const action = { name: 'LOSE_GAME', meta: { sound: 'loseGame'} };
+  describe('howlerIntegration handoff', () => {
+    let playSpy, endTurnSpy, winGameSpy, allSoundsSpy;
+
+    before( () => {
+      playSpy       = sinon.spy(howlerIntegration, 'play');
+      endTurnSpy    = sinon.spy(howlerIntegration.sounds.endTurn, 'play');
+      winGameSpy    = sinon.spy(howlerIntegration.sounds.winGame, 'play');
+      allSoundsSpy  = sinon.spy(howlerIntegration.sounds.allSounds, 'play');
+    });
+    afterEach( () => {
+      playSpy.reset();
+      endTurnSpy.reset();
+      winGameSpy.reset();
+      allSoundsSpy.reset();
+    });
+    after( () => {
+      playSpy.restore();
+      endTurnSpy.restore();
+      winGameSpy.restore();
+      allSoundsSpy.restore();
+    });
+
+    it('invokes .play with endTurn', () => {
+      const action = { name: 'END_TURN', meta: { sound: 'endTurn'} };
       actionHandler(action);
 
-      expect(consoleStub).to.have.been.calledOnce;
-      expect(next).to.have.been.calledOnce;
+      expect(playSpy).to.have.been.calledOnce;
+      expect(playSpy).to.have.been.calledWithExactly('endTurn', undefined);
+      expect(endTurnSpy).to.have.been.calledOnce;
+      expect(endTurnSpy).to.have.been.calledWithExactly(undefined);
+    });
+
+    it('invokes .play with winGame', () => {
+      const action = { name: 'WIN_GAME', meta: { sound: 'winGame'} };
+      actionHandler(action);
+
+      expect(playSpy).to.have.been.calledOnce;
+      expect(playSpy).to.have.been.calledWithExactly('winGame', undefined);
+      expect(winGameSpy).to.have.been.calledOnce;
+      expect(winGameSpy).to.have.been.calledWithExactly(undefined);
+    });
+
+    it('invokes .play with allSounds (with spriteName)', () => {
+      const action = { name: 'BOOM', meta: { sound: 'allSounds.boom'} };
+      actionHandler(action);
+
+      expect(playSpy).to.have.been.calledOnce;
+      expect(playSpy).to.have.been.calledWithExactly('allSounds', 'boom');
+      expect(allSoundsSpy).to.have.been.calledOnce;
+      expect(allSoundsSpy).to.have.been.calledWithExactly('boom');
     });
   });
 });
