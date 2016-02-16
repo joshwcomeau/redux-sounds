@@ -71,7 +71,7 @@ const soundsData = {
     sprite: {
       lowJump: [0, 1000],
       longJump: [1000, 2500],
-      antiGravityJump: [3000, 4500]
+      antiGravityJump: [3500, 10000]
     }
   }
 }
