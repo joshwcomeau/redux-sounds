@@ -182,6 +182,18 @@ const loadedSoundsMiddleware = soundsMiddleware(soundsData);
 const store = createStore(rootReducer, applyMiddleware(loadedSoundsMiddleware));
 ```
 
+
+## Tests
+
+To run: `npm run test`
+
+Using Mocha for test-running, Chai Expect for assertions, and Istanbul for test coverage.
+
+While test coverage is 100%, because the tests run in Node, and Node has no ability to play sounds, the actual output is not tested.
+
+Because I've delegated these duties to Howler, though, I don't feel too bad about that. I check to make sure the right info is passed to Howler at the right time; Howler's tests can take it from there.
+
+
 ## Planned functionality
 
 The biggest feature I feel is missing from this implementation is a way to interrupt/stop sounds once they've started. I'd like to implement the ability to dispatch an action that _stops_ a sound.

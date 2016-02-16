@@ -14,7 +14,7 @@
     "build:umd": "webpack src/index.js dist/redux-sounds.js --config webpack.config.development.js",
     "build:umd:min": "webpack src/index.js dist/redux-sounds.min.js --config webpack.config.production.js",
     "build": "npm run build:lib && npm run build:umd && npm run build:umd:min",
-    "test": "mocha --compilers js:babel-core/register --reporter spec test/*.js"
+    "test": "./node_modules/.bin/babel-node ./node_modules/.bin/babel-istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --compilers js:babel-core/register --reporter spec test/*.js"
   },
   "repository": {
     "type": "git",
@@ -38,6 +38,7 @@
     "babel-cli": "^6.2.0",
     "babel-core": "^6.2.1",
     "babel-eslint": "^5.0.0-beta4",
+    "babel-istanbul": "^0.6.0",
     "babel-loader": "^6.2.1",
     "babel-plugin-add-module-exports": "^0.1.1",
     "babel-plugin-transform-object-assign": "^6.3.13",
