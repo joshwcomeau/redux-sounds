@@ -14,10 +14,7 @@ module.exports = {
         soundOptions = { urls: [soundOptions] };
       }
 
-      // TODO: Replace this with a ...merge. Get rid of Object.assign polyfill.
-      return Object.assign(memo, {
-        [name]: new Howl(soundOptions)
-      });
+      return { ...memo, [name]: new Howl(soundOptions) }
     }, {});
 
     return this.sounds;
