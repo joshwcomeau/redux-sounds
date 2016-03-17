@@ -14,7 +14,7 @@
     "build:umd": "webpack src/index.js dist/redux-sounds.js --config webpack.config.development.js",
     "build:umd:min": "webpack src/index.js dist/redux-sounds.min.js --config webpack.config.production.js",
     "build": "npm run build:lib && npm run build:umd && npm run build:umd:min",
-    "test": "./node_modules/.bin/babel-node ./node_modules/.bin/babel-istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --compilers js:babel-core/register --reporter spec test/*.js && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js "
+    "test": "./node_modules/.bin/babel-node ./node_modules/.bin/babel-istanbul cover ./node_modules/.bin/_mocha --report lcovonly -- --compilers js:babel-core/register --reporter spec test/*.js && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "repository": {
     "type": "git",
