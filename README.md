@@ -3,6 +3,7 @@ Redux Sounds
 
 [![build status](https://img.shields.io/travis/joshwcomeau/redux-sounds/master.svg?style=flat-square)](https://travis-ci.org/joshwcomeau/redux-sounds)
 [![npm version](https://img.shields.io/npm/v/redux-sounds.svg?style=flat-square)](https://www.npmjs.com/package/redux-sounds)
+[![Coverage Status](https://coveralls.io/repos/github/joshwcomeau/redux-sounds/badge.svg?branch=master)](https://coveralls.io/github/joshwcomeau/redux-sounds?branch=master)
 
 
 Redux [middleware](http://rackt.org/redux/docs/advanced/Middleware.html) that lets you easily trigger sound effects on actions. Makes it completely trivial to do so, by adding a `meta` property to any action:
