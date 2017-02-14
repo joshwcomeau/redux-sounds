@@ -92,7 +92,7 @@ Howler has much more advanced capabilities, including specifying callbacks to ru
 
 Once your store is created, dispatching actions that trigger sounds is simple.
 
-Using the convention established in the [rafScheduler Middleware example](https://github.com/rackt/redux/blob/46083e73d952feb367bf3fa4e13c1e419a224100/docs/advanced/Middleware.md#seven-examples), a new `meta` property can be attached to actions. This `meta` property should have a `sound` key, and its value should be that of a registered sound.
+Using the convention established in the [rafScheduler Middleware example](https://github.com/reactjs/redux/blob/master/docs/advanced/Middleware.md#seven-examples), a new `meta` property can be attached to actions. This `meta` property should have a `sound` key, and its value should be that of a registered sound.
 
 Continuing from our example above, we have 5 possible sounds: `endTurn`, `winGame`, and 3 flavors of jumps.
 
