@@ -18,11 +18,11 @@ chai.use(sinonChai);
 const soundsData = {
   endTurn: 'path/to/sound.mp3',
   winGame: {
-    urls:   ['path/to/other_sound.mp3'],
+    src:   ['path/to/other_sound.mp3'],
     volume: 0.75
   },
   allSounds: {
-    urls: ['sound1.mp3'],
+    src: ['sound1.mp3'],
     sprite: {
       boom:   [0, 1000],
       bang:   [1500, 2000],
@@ -55,14 +55,14 @@ describe('howlerIntegration', () => {
 
     it('set up the URL for endTurn (string-based)', () => {
       expected  = [ 'path/to/sound.mp3' ];
-      actual    = sounds.endTurn._urls;
+      actual    = sounds.endTurn._src;
 
       expect(expected).to.deep.equal(actual);
     });
 
     it('set up the URL for winGame (property-based)', () => {
       expected  = [ 'path/to/other_sound.mp3' ];
-      actual    = sounds.winGame._urls;
+      actual    = sounds.winGame._src;
 
       expect(expected).to.deep.equal(actual);
     });

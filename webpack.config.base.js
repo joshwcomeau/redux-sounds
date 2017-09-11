@@ -1,5 +1,3 @@
-var webpack = require('webpack');
-
 module.exports = {
   output: {
     library: 'ReduxSounds',
@@ -7,17 +5,17 @@ module.exports = {
   },
 
   module: {
-    loaders: [
+    rules: [
       {
-        test:     /\.js$/,
-        loader:   'babel',
-        exclude:  /node_modules/,
-        include:  /src/
+        test: /\.js$/,
+        use: { loader: 'babel-loader' },
+        exclude: /node_modules/,
+        include: /src/
       }
     ]
   },
 
   resolve: {
-    extensions: ['', '.js']
+    extensions: ['.js']
   }
-}
+};
