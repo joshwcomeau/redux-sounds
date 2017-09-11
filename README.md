@@ -56,7 +56,7 @@ const soundsData = {
   // Alternatively, we can pass a configuration object.
   // All valid howler.js options can be used here.
   winGame: {
-    urls: [
+    src: [
       'https://s3.amazonaws.com/bucketName/win_game.mp3',
       'https://s3.amazonaws.com/bucketName/win_game.wav'
     ],
@@ -68,7 +68,7 @@ const soundsData = {
   //   - the start time of the sound, in milliseconds
   //   - the duration of the sound, in milliseconds
   jumps: {
-    urls: [ 'https://s3.amazonaws.com/bucketName/jumps.mp3' ],
+    src: [ 'https://s3.amazonaws.com/bucketName/jumps.mp3' ],
     sprite: {
       lowJump: [0, 1000],
       longJump: [1000, 2500],
