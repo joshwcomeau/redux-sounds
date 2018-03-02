@@ -11,7 +11,7 @@ module.exports = {
 
       // Allow strings instead of objects, for when all that is needed is a URL
       if ( typeof soundOptions === 'string' ) {
-        soundOptions = { urls: [soundOptions] };
+        soundOptions = {src: [soundOptions]};
       }
 
       return { ...memo, [name]: new Howl(soundOptions) }

@@ -3,4 +3,4 @@ cache:
   directories:
     - node_modules
 node_js:
-  - "5"
+  - "6"
