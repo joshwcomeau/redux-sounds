@@ -1,6 +1,6 @@
 {
   "name": "redux-sounds",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Sound effect middleware for Redux.",
   "main": "lib/index.js",
   "files": [
@@ -31,7 +31,7 @@
   "author": "Joshua Comeau <joshwcomeau@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "howler": "2.0.4"
+    "howler": "2.0.9"
   },
   "devDependencies": {
     "babel": "^6.1.18",
