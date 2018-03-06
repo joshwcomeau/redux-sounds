@@ -1,7 +1,8 @@
 const howlerIntegration = require('./howler_integration');
+const isObjectWithValues = require('./isObjectWithValues');
 
 function soundsMiddleware(soundsData) {
-  if ( typeof soundsData !== 'object' )
+  if (typeof soundsData !== 'object')
     throw {
       name: 'missingSoundData',
       message: `
@@ -16,16 +17,22 @@ function soundsMiddleware(soundsData) {
   // middleware, and constructs a new Howl object for each one with them.
   howlerIntegration.initialize(soundsData);
 
-  return store => next => action => {
+  return (store) => (next) => (action) => {
     // Ignore actions that haven't specified a sound.
-    if ( !action.meta || !action.meta.sound ) {
+    if (!action.meta || !isObjectWithValues(action.meta.sound)) {
       return next(action);
     }
-
-    const [ soundName, spriteName ] = action.meta.sound.split('.');
-
-    howlerIntegration.play(soundName, spriteName);
-
+    const methods = Object.keys(action.meta.sound);
+    methods.forEach((method) => {
+      const target = action.meta.sound[method];
+      if (Array.isArray(target)) {
+        const [soundName, spriteName] = target[0].split('.');
+        howlerIntegration.proxy(soundName, spriteName, method, ...target.slice(1));
+      } else {
+        const [soundName, spriteName] = target.split('.');
+        howlerIntegration.proxy(soundName, spriteName, method);
+      }
+    });
     return next(action);
   };
 }

@@ -96,6 +96,31 @@ Using the convention established in the [rafScheduler Middleware example](https:
 
 Continuing from our example above, we have 5 possible sounds: `endTurn`, `winGame`, and 3 flavors of jumps.
 
+The Howler methods other than `play` follow almost the same API as Howler:
+
+**Howler**
+```javascript
+sound.fade(1, 0, 1000, id);
+sound.stop(id);
+```
+
+**redux-sounds action**
+```javascript
+// fade
+meta: {
+  sound: {
+    fade: ['endTurn', 1, 0, 1000]
+  }
+}
+
+// stop
+meta: {
+  sound: {
+    stop: 'endTurn'
+  }
+}
+```
+
 For sprites, separate the sound name from the sprite name with a period (`.`). A couple examples of the actions we can dispatch:
 
 ```js
@@ -104,20 +129,51 @@ For sprites, separate the sound name from the sprite name with a period (`.`). A
 export function endTurn() {
   return {
     type: 'END_TURN',
-    meta: { sound: 'endTurn' }
+    meta: {
+      sound: {
+        play :'endTurn'
+      }
+    }
   }
 }
 
 export function lowJump() {
   return {
     type: 'LOW_JUMP',
-    meta: { sound: 'jumps.lowJump' }
+    meta: {
+      sound: {
+        play: 'jumps.lowJump'
+      }
+    }
+  }
+}
+
+export function lowJumpStop() {
+  return {
+    type: 'LOW_JUMP_STOP',
+    meta: {
+      sound: {
+        stop: 'jumps.lowJump'
+      }
+    }
+  }
+}
+
+export function lowJumpFade() {
+  return {
+    type: 'LOW_JUMP_STOP',
+    meta: {
+      sound: {
+        fade: ['jumps.lowJump', 0 , 1, 2]
+      }
+    }
   }
 }
 
 ```
 
-_**Note:**It is worth noting that it is unlikely that you'll need to create new actions for your sound effects; You'll probably want to just add `meta` properties to pre-existing actions, so that they play a sound in addition to whatever else they do (change the reducer state, trigger other middleware, etc)._
+_**Note:** It is worth noting that it is unlikely that you'll need to create new actions for your sound effects; You'll probably want to just add `meta` properties to pre-existing actions, so that they play a sound in addition to whatever else they do (change the reducer state, trigger other middleware, etc)._
+_**Also Note:** When a sound is playing multiple times at once, Howler methods (stop, fade, pause, etc.) will apply to **all** playing instances_
 
 
 ## Troubleshooting
@@ -141,7 +197,7 @@ The keys in that object must correspond to the value specified when you dispatch
 ```js
 dispatch({
   type: 'ACTION_NAME',
-  meta: { sound: 'foo' }
+  meta: { sound: { play: 'foo' }
 });
 ```
 
@@ -196,8 +252,6 @@ Because I've delegated these duties to Howler, though, I don't feel too bad abou
 
 
 ## Planned functionality
-
-The biggest feature I feel is missing from this implementation is a way to interrupt/stop sounds once they've started. I'd like to implement the ability to dispatch an action that _stops_ a sound.
 
 Got ideas for must-have functionality? Create an issue and let's discuss =)
 
