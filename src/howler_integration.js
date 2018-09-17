@@ -1,9 +1,9 @@
-const Howl = require('howler').Howl;
+const { Howl } = require('howler');
 const { isObjectWithValues } = require('./utils');
 
 module.exports = {
   removeId(id) {
-    Object.keys(this.playing).forEach(key => this.playing[key].delete(id));
+    Object.keys(this.playing).forEach((key) => this.playing[key].delete(id));
   },
   initialize(soundsData) {
     let soundOptions;
@@ -15,12 +15,12 @@ module.exports = {
       soundOptions = soundsData[name];
 
       // Allow strings instead of objects, for when all that is needed is a URL
-      if ( typeof soundOptions === 'string' ) {
-        soundOptions = {src: [soundOptions]};
+      if (typeof soundOptions === 'string') {
+        soundOptions = { src: [soundOptions] };
       }
 
       const sprites = soundOptions.sprite;
-      if ( isObjectWithValues(sprites) ) {
+      if (isObjectWithValues(sprites)) {
         Object.keys(sprites).forEach((spriteName) => {
           this.playing[name + spriteName] = new Set();
         });
@@ -52,12 +52,13 @@ module.exports = {
 
   proxy(soundName, spriteName, name, ...args) {
     const sound = this.sounds[soundName];
-    if ( typeof sound === 'undefined' ) {
+    if (typeof sound === 'undefined') {
       return console.warn(`
       The sound '${soundName}' was requested, but redux-sounds doesn't have anything registered under that name.
       See https://github.com/joshwcomeau/redux-sounds#unregistered-sound
     `);
-    } else if ( spriteName && typeof sound._sprite[spriteName] === 'undefined' ) {
+    }
+    if (spriteName && typeof sound._sprite[spriteName] === 'undefined') {
       const validSprites = Object.keys(sound._sprite).join(', ');
       return console.warn(`
       The sound '${soundName}' was found, but it does not have a sprite specified for '${spriteName}'.
@@ -67,15 +68,14 @@ module.exports = {
     }
     if (name === 'play') {
       return this.play(soundName, spriteName);
-    } else {
-      return this.howlMethod(soundName, spriteName, name, ...args);
     }
+    return this.howlMethod(soundName, spriteName, name, ...args);
   },
 
   play(soundName, spriteName = '') {
     const sound = this.sounds[soundName];
     const id = sound.play(spriteName);
-    if ( this.playing[soundName + spriteName] ) {
+    if (this.playing[soundName + spriteName]) {
       this.playing[soundName + spriteName].add(id);
     }
     return id;
@@ -83,11 +83,10 @@ module.exports = {
 
   howlMethod(soundName, spriteName = '', method, ...args) {
     const sound = this.sounds[soundName];
-    if ( this.playing[soundName + spriteName] ) {
+    if (this.playing[soundName + spriteName]) {
       this.playing[soundName + spriteName].forEach((id) => {
         sound[method](id);
       });
     }
   }
 };
-

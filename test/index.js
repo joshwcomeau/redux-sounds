@@ -4,37 +4,48 @@
 // We'll test the middleware instantiation, how it handles actions, whether
 // it hands the right data to Howler, and some other configuration stuff.
 //
-import chai, { expect }   from 'chai';
-import { Howl }           from 'howler';
-import sinon              from 'sinon';
-import sinonChai          from 'sinon-chai';
+import chai, { expect } from 'chai';
+import { Howl } from 'howler';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 
-import soundMiddleware    from '../src/index';
+import soundMiddleware from '../src/index';
+
 const howlerIntegration = require('../src/howler_integration');
 const { isObjectWithValues } = require('../src/utils');
 
 chai.use(sinonChai);
 
-
 const soundsData = {
   endTurn: 'path/to/sound.mp3',
   winGame: {
-    src:   ['path/to/other_sound.mp3'],
+    src: ['path/to/other_sound.mp3'],
     volume: 0.75
   },
   allSounds: {
     src: ['sound1.mp3'],
     sprite: {
-      boom:   [0, 1000],
-      bang:   [1500, 2000],
-      crash:  [2000,2345]
+      boom: [0, 1000],
+      bang: [1500, 2000],
+      crash: [2000, 2345]
     }
   }
 };
 
 describe('utils', () => {
   const truthy = [{ hello: 'world' }];
-  const falsy = [undefined, null, false, true, '', 'test', 234, new Date(), {}, Object.create(null)];
+  const falsy = [
+    undefined,
+    null,
+    false,
+    true,
+    '',
+    'test',
+    234,
+    new Date(),
+    {},
+    Object.create(null)
+  ];
 
   describe('#isObjectWithValues', () => {
     it('returns falsy for an empty Object or non-object', () => {
@@ -51,95 +62,103 @@ describe('utils', () => {
 });
 
 describe('howlerIntegration', () => {
-  const sounds          = howlerIntegration.initialize(soundsData);
-  const playing         = howlerIntegration.playing;
-  const playingNames    = Object.keys(playing);
-  const playingValues   = playingNames.map( name => playing[name] );
-  const soundNames      = Object.keys(sounds);
-  const soundValues     = soundNames.map( name => sounds[name] );
+  const sounds = howlerIntegration.initialize(soundsData);
+  const playing = howlerIntegration.playing;
+  const playingNames = Object.keys(playing);
+  const playingValues = playingNames.map((name) => playing[name]);
+  const soundNames = Object.keys(sounds);
+  const soundValues = soundNames.map((name) => sounds[name]);
 
-  let actual, expected;
+  let actual;
+  let expected;
 
   describe('#initialize', () => {
     it('contains keys for each sound name', () => {
-      expected  = ['endTurn', 'winGame', 'allSounds'];
-      actual    = soundNames;
+      expected = ['endTurn', 'winGame', 'allSounds'];
+      actual = soundNames;
 
       expect(expected).to.deep.equal(actual);
     });
 
     it('contains a hashmap with all possible playing names', () => {
-      expected  = ['endTurn', 'winGame', 'allSoundsboom', 'allSoundsbang', 'allSoundscrash'];
-      actual    = playingNames;
+      expected = [
+        'endTurn',
+        'winGame',
+        'allSoundsboom',
+        'allSoundsbang',
+        'allSoundscrash'
+      ];
+      actual = playingNames;
 
       expect(expected).to.deep.equal(actual);
     });
 
     it('contains Howler instances for each sound value', () => {
-      soundValues.forEach( sound => {
+      soundValues.forEach((sound) => {
         expect(sound).to.be.an.instanceof(Howl);
       });
     });
 
     it('contains Set instances for each possible playing name', () => {
-      playingValues.forEach( ids => {
+      playingValues.forEach((ids) => {
         expect(ids).to.be.an.instanceof(Set);
       });
     });
 
     it('set up the URL for endTurn (string-based)', () => {
-      expected  = [ 'path/to/sound.mp3' ];
-      actual    = sounds.endTurn._src;
+      expected = ['path/to/sound.mp3'];
+      actual = sounds.endTurn._src;
 
       expect(expected).to.deep.equal(actual);
     });
 
     it('set up the URL for winGame (property-based)', () => {
-      expected  = [ 'path/to/other_sound.mp3' ];
-      actual    = sounds.winGame._src;
+      expected = ['path/to/other_sound.mp3'];
+      actual = sounds.winGame._src;
 
       expect(expected).to.deep.equal(actual);
     });
 
     it('set up the volume for winGame (property-based)', () => {
-      expected  = 0.75;
-      actual    = sounds.winGame._volume;
+      expected = 0.75;
+      actual = sounds.winGame._volume;
 
       expect(expected).to.deep.equal(actual);
     });
 
     it('set up the sprites for allSounds', () => {
-      expected  = { boom: [0, 1000], bang: [1500, 2000], crash: [2000,2345] };
-      actual    = sounds.allSounds._sprite;
+      expected = { boom: [0, 1000], bang: [1500, 2000], crash: [2000, 2345] };
+      actual = sounds.allSounds._sprite;
 
       expect(expected).to.deep.equal(actual);
     });
 
     it('offers a "play" method for triggering sounds', () => {
-      soundValues.forEach( sound => {
+      soundValues.forEach((sound) => {
         expect(sound.play).to.be.a('function');
-      })
+      });
     });
 
     it('offers a "fade" method for setting a sound or sprite\'s volume', () => {
-      soundValues.forEach( sound => {
+      soundValues.forEach((sound) => {
         expect(sound.fade).to.be.a('function');
-      })
+      });
     });
   });
 });
 
-
 describe('soundMiddleware', () => {
-  const next        = sinon.spy();
+  const next = sinon.spy();
   const consoleStub = sinon.stub(console, 'warn');
 
-  let storeHandler, nextHandler, actionHandler;
+  let storeHandler;
+  let nextHandler;
+  let actionHandler;
 
-  afterEach( () => {
+  afterEach(() => {
     // reset our spies and stubs
-    consoleStub.reset();
-    next.reset();
+    consoleStub.resetHistory();
+    next.resetHistory();
   });
 
   describe('initialization', () => {
@@ -151,34 +170,39 @@ describe('soundMiddleware', () => {
   describe('curried application', () => {
     it('loads the middleware with sounds data, returns a function', () => {
       storeHandler = soundMiddleware(soundsData);
-      expect(storeHandler).to.be.a('function')
+      expect(storeHandler).to.be.a('function');
     });
 
     it('loads the store, and returns a function', () => {
       // We don't use the store in my middleware at all.
       // Pass in an empty object, just to match the real-world input type.
       nextHandler = storeHandler({});
-      expect(nextHandler).to.be.a('function')
+      expect(nextHandler).to.be.a('function');
     });
 
     it('loads next, and returns a function', () => {
       actionHandler = nextHandler(next);
-      expect(actionHandler).to.be.a('function')
+      expect(actionHandler).to.be.a('function');
     });
   });
 
   describe('dispatching actions', () => {
     it('console.warns when the sound is not found when trying to play', () => {
-      const action = { name: 'LOSE_GAME', meta: { sound: { play: 'loseGame' } } };
+      const action = {
+        name: 'LOSE_GAME',
+        meta: { sound: { play: 'loseGame' } }
+      };
       actionHandler(action);
 
       expect(consoleStub).to.have.been.calledOnce;
       expect(next).to.have.been.calledOnce;
     });
 
-
     it('console.warns when the sound is not found when trying to stop', () => {
-      const action = { name: 'LOSE_GAME', meta: { sound: { stop: 'loseGame' } } };
+      const action = {
+        name: 'LOSE_GAME',
+        meta: { sound: { stop: 'loseGame' } }
+      };
       actionHandler(action);
 
       expect(consoleStub).to.have.been.calledOnce;
@@ -186,7 +210,10 @@ describe('soundMiddleware', () => {
     });
 
     it('console.warns when the sound is found, but not the sprite', () => {
-      const action = { name: 'CLANG', meta: { sound: { play: 'allSounds.clang' } } };
+      const action = {
+        name: 'CLANG',
+        meta: { sound: { play: 'allSounds.clang' } }
+      };
       actionHandler(action);
 
       expect(consoleStub).to.have.been.calledOnce;
@@ -211,45 +238,45 @@ describe('soundMiddleware', () => {
   });
 
   describe('howlerIntegration handoff', () => {
-    let playSpy,
-      endTurnSpy,
-      winGameSpy,
-      allSoundsSpy,
-      proxySpy,
-      endTurnStopSpy,
-      winGameStopSpy,
-      allSoundsStopSpy,
-      endTurnFadeSpy,
-      winGameFadeSpy,
-      allSoundsFadeSpy;
+    let playSpy;
+    let endTurnSpy;
+    let winGameSpy;
+    let allSoundsSpy;
+    let proxySpy;
+    let endTurnStopSpy;
+    let winGameStopSpy;
+    let allSoundsStopSpy;
+    let endTurnFadeSpy;
+    let winGameFadeSpy;
+    let allSoundsFadeSpy;
 
-    before( () => {
-      playSpy           = sinon.spy(howlerIntegration, 'play');
-      endTurnSpy        = sinon.spy(howlerIntegration.sounds.endTurn, 'play');
-      winGameSpy        = sinon.spy(howlerIntegration.sounds.winGame, 'play');
-      allSoundsSpy      = sinon.spy(howlerIntegration.sounds.allSounds, 'play');
-      proxySpy          = sinon.spy(howlerIntegration, 'proxy');
-      endTurnStopSpy    = sinon.spy(howlerIntegration.sounds.endTurn, 'stop');
-      winGameStopSpy    = sinon.spy(howlerIntegration.sounds.winGame, 'stop');
-      allSoundsStopSpy  = sinon.spy(howlerIntegration.sounds.allSounds, 'stop');
-      endTurnFadeSpy    = sinon.spy(howlerIntegration.sounds.endTurn, 'fade');
-      winGameFadeSpy    = sinon.spy(howlerIntegration.sounds.winGame, 'fade');
-      allSoundsFadeSpy  = sinon.spy(howlerIntegration.sounds.allSounds, 'fade');
+    before(() => {
+      playSpy = sinon.spy(howlerIntegration, 'play');
+      endTurnSpy = sinon.spy(howlerIntegration.sounds.endTurn, 'play');
+      winGameSpy = sinon.spy(howlerIntegration.sounds.winGame, 'play');
+      allSoundsSpy = sinon.spy(howlerIntegration.sounds.allSounds, 'play');
+      proxySpy = sinon.spy(howlerIntegration, 'proxy');
+      endTurnStopSpy = sinon.spy(howlerIntegration.sounds.endTurn, 'stop');
+      winGameStopSpy = sinon.spy(howlerIntegration.sounds.winGame, 'stop');
+      allSoundsStopSpy = sinon.spy(howlerIntegration.sounds.allSounds, 'stop');
+      endTurnFadeSpy = sinon.spy(howlerIntegration.sounds.endTurn, 'fade');
+      winGameFadeSpy = sinon.spy(howlerIntegration.sounds.winGame, 'fade');
+      allSoundsFadeSpy = sinon.spy(howlerIntegration.sounds.allSounds, 'fade');
     });
-    afterEach( () => {
-      playSpy.reset();
-      endTurnSpy.reset();
-      winGameSpy.reset();
-      allSoundsSpy.reset();
-      proxySpy.reset();
-      endTurnStopSpy.reset();
-      winGameStopSpy.reset();
-      allSoundsStopSpy.reset();
-      endTurnFadeSpy.reset();
-      winGameFadeSpy.reset();
-      allSoundsFadeSpy.reset();
+    afterEach(() => {
+      playSpy.resetHistory();
+      endTurnSpy.resetHistory();
+      winGameSpy.resetHistory();
+      allSoundsSpy.resetHistory();
+      proxySpy.resetHistory();
+      endTurnStopSpy.resetHistory();
+      winGameStopSpy.resetHistory();
+      allSoundsStopSpy.resetHistory();
+      endTurnFadeSpy.resetHistory();
+      winGameFadeSpy.resetHistory();
+      allSoundsFadeSpy.resetHistory();
     });
-    after( () => {
+    after(() => {
       playSpy.restore();
       endTurnSpy.restore();
       winGameSpy.restore();
@@ -278,20 +305,38 @@ describe('soundMiddleware', () => {
       actionHandler(action);
 
       expect(proxySpy).to.have.been.calledOnce;
-      expect(proxySpy).to.have.been.calledWithExactly('endTurn', undefined, 'stop');
-      expect(endTurnStopSpy).to.have.callCount(howlerIntegration.playing.endTurn.size);
+      expect(proxySpy).to.have.been.calledWithExactly(
+        'endTurn',
+        undefined,
+        'stop'
+      );
+      expect(endTurnStopSpy).to.have.callCount(
+        howlerIntegration.playing.endTurn.size
+      );
       expect(endTurnStopSpy).to.have.been.calledWithExactly(
         howlerIntegration.playing.endTurn.values().next().value
       );
     });
 
     it('invokes .fade with endTurn', () => {
-      const action = { name: 'END_TURN', meta: { sound: { fade: ['endTurn', 0, 1, 2] } } };
+      const action = {
+        name: 'END_TURN',
+        meta: { sound: { fade: ['endTurn', 0, 1, 2] } }
+      };
       actionHandler(action);
 
       expect(proxySpy).to.have.been.calledOnce;
-      expect(proxySpy).to.have.been.calledWithExactly('endTurn', undefined, 'fade', 0, 1, 2);
-      expect(endTurnFadeSpy).to.have.callCount(howlerIntegration.playing.endTurn.size);
+      expect(proxySpy).to.have.been.calledWithExactly(
+        'endTurn',
+        undefined,
+        'fade',
+        0,
+        1,
+        2
+      );
+      expect(endTurnFadeSpy).to.have.callCount(
+        howlerIntegration.playing.endTurn.size
+      );
       expect(endTurnFadeSpy).to.have.been.calledWithExactly(
         howlerIntegration.playing.endTurn.values().next().value
       );
@@ -312,27 +357,48 @@ describe('soundMiddleware', () => {
       actionHandler(action);
 
       expect(proxySpy).to.have.been.calledOnce;
-      expect(proxySpy).to.have.been.calledWithExactly('winGame', undefined, 'stop');
-      expect(winGameStopSpy).to.have.callCount(howlerIntegration.playing.winGame.size);
+      expect(proxySpy).to.have.been.calledWithExactly(
+        'winGame',
+        undefined,
+        'stop'
+      );
+      expect(winGameStopSpy).to.have.callCount(
+        howlerIntegration.playing.winGame.size
+      );
       expect(winGameStopSpy).to.have.been.calledWithExactly(
         howlerIntegration.playing.winGame.values().next().value
       );
     });
 
     it('invokes .fade with winGame', () => {
-      const action = { name: 'END_TURN', meta: { sound: { fade: ['winGame', 0, 1, 2] } } };
+      const action = {
+        name: 'END_TURN',
+        meta: { sound: { fade: ['winGame', 0, 1, 2] } }
+      };
       actionHandler(action);
 
       expect(proxySpy).to.have.been.calledOnce;
-      expect(proxySpy).to.have.been.calledWithExactly('winGame', undefined, 'fade', 0, 1, 2);
-      expect(winGameFadeSpy).to.have.callCount(howlerIntegration.playing.winGame.size);
+      expect(proxySpy).to.have.been.calledWithExactly(
+        'winGame',
+        undefined,
+        'fade',
+        0,
+        1,
+        2
+      );
+      expect(winGameFadeSpy).to.have.callCount(
+        howlerIntegration.playing.winGame.size
+      );
       expect(winGameFadeSpy).to.have.been.calledWithExactly(
         howlerIntegration.playing.winGame.values().next().value
       );
     });
 
     it('invokes .play with allSounds (with spriteName)', () => {
-      const action = { name: 'BOOM', meta: { sound: { play: 'allSounds.boom' } } };
+      const action = {
+        name: 'BOOM',
+        meta: { sound: { play: 'allSounds.boom' } }
+      };
       actionHandler(action);
 
       expect(playSpy).to.have.been.calledOnce;
@@ -342,24 +408,45 @@ describe('soundMiddleware', () => {
     });
 
     it('invokes .stop with allSounds (with spriteName)', () => {
-      const action = { name: 'WIN_GAME', meta: { sound: { stop: 'allSounds.boom' } } };
+      const action = {
+        name: 'WIN_GAME',
+        meta: { sound: { stop: 'allSounds.boom' } }
+      };
       actionHandler(action);
 
       expect(proxySpy).to.have.been.calledOnce;
-      expect(proxySpy).to.have.been.calledWithExactly('allSounds', 'boom', 'stop');
-      expect(allSoundsStopSpy).to.have.callCount(howlerIntegration.playing.allSoundsboom.size);
+      expect(proxySpy).to.have.been.calledWithExactly(
+        'allSounds',
+        'boom',
+        'stop'
+      );
+      expect(allSoundsStopSpy).to.have.callCount(
+        howlerIntegration.playing.allSoundsboom.size
+      );
       expect(allSoundsStopSpy).to.have.been.calledWithExactly(
         howlerIntegration.playing.allSoundsboom.values().next().value
       );
     });
 
     it('invokes .fade with allSounds (with spriteName)', () => {
-      const action = { name: 'END_TURN', meta: { sound: { fade: ['allSounds.boom', 0, 1, 2] } } };
+      const action = {
+        name: 'END_TURN',
+        meta: { sound: { fade: ['allSounds.boom', 0, 1, 2] } }
+      };
       actionHandler(action);
 
       expect(proxySpy).to.have.been.calledOnce;
-      expect(proxySpy).to.have.been.calledWithExactly('allSounds', 'boom', 'fade', 0, 1, 2);
-      expect(allSoundsFadeSpy).to.have.callCount(howlerIntegration.playing.allSoundsboom.size);
+      expect(proxySpy).to.have.been.calledWithExactly(
+        'allSounds',
+        'boom',
+        'fade',
+        0,
+        1,
+        2
+      );
+      expect(allSoundsFadeSpy).to.have.callCount(
+        howlerIntegration.playing.allSoundsboom.size
+      );
       expect(allSoundsFadeSpy).to.have.been.calledWithExactly(
         howlerIntegration.playing.allSoundsboom.values().next().value
       );
