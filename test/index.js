@@ -297,7 +297,7 @@ describe('soundMiddleware', () => {
       expect(playSpy).to.have.been.calledOnce;
       expect(playSpy).to.have.been.calledWithExactly('endTurn', undefined);
       expect(endTurnSpy).to.have.been.calledOnce;
-      expect(endTurnSpy).to.have.been.calledWithExactly('');
+      expect(endTurnSpy).to.have.been.calledWithExactly(undefined);
     });
 
     it('invokes .stop with endTurn', () => {
@@ -338,6 +338,9 @@ describe('soundMiddleware', () => {
         howlerIntegration.playing.endTurn.size
       );
       expect(endTurnFadeSpy).to.have.been.calledWithExactly(
+        0,
+        1,
+        2,
         howlerIntegration.playing.endTurn.values().next().value
       );
     });
@@ -349,7 +352,7 @@ describe('soundMiddleware', () => {
       expect(playSpy).to.have.been.calledOnce;
       expect(playSpy).to.have.been.calledWithExactly('winGame', undefined);
       expect(winGameSpy).to.have.been.calledOnce;
-      expect(winGameSpy).to.have.been.calledWithExactly('');
+      expect(winGameSpy).to.have.been.calledWithExactly(undefined);
     });
 
     it('invokes .stop with winGame', () => {
@@ -390,6 +393,9 @@ describe('soundMiddleware', () => {
         howlerIntegration.playing.winGame.size
       );
       expect(winGameFadeSpy).to.have.been.calledWithExactly(
+        0,
+        1,
+        2,
         howlerIntegration.playing.winGame.values().next().value
       );
     });
@@ -448,6 +454,9 @@ describe('soundMiddleware', () => {
         howlerIntegration.playing.allSoundsboom.size
       );
       expect(allSoundsFadeSpy).to.have.been.calledWithExactly(
+        0,
+        1,
+        2,
         howlerIntegration.playing.allSoundsboom.values().next().value
       );
     });

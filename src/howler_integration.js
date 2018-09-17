@@ -74,7 +74,7 @@ module.exports = {
 
   play(soundName, spriteName = '') {
     const sound = this.sounds[soundName];
-    const id = sound.play(spriteName);
+    const id = sound.play(spriteName || undefined);
     if (this.playing[soundName + spriteName]) {
       this.playing[soundName + spriteName].add(id);
     }
@@ -85,8 +85,10 @@ module.exports = {
     const sound = this.sounds[soundName];
     if (this.playing[soundName + spriteName]) {
       this.playing[soundName + spriteName].forEach((id) => {
-        sound[method](id);
+        sound[method](...args, id);
       });
+    } else {
+      sound[method](...args);
     }
   }
 };

@@ -12,9 +12,13 @@ Redux [middleware](http://rackt.org/redux/docs/advanced/Middleware.html) that le
 export function danceMoves() {
   return {
     type: 'DANCE_MOVES',
-    meta: { sound: 'groovyMusic' }
+    meta: {
+      sound: {
+        play: 'groovyMusic'
+      }
+    }
   }
-}
+};
 ```
 
 Uses [Howler.js](https://github.com/goldfire/howler.js/) under the hood, which uses [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) when available, with a graceful fallback to [HTML5 Audio](https://en.wikipedia.org/wiki/HTML5_Audio).
