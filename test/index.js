@@ -63,7 +63,7 @@ describe('utils', () => {
 
 describe('howlerIntegration', () => {
   const sounds = howlerIntegration.initialize(soundsData);
-  const playing = howlerIntegration.playing;
+  const { playing } = howlerIntegration;
   const playingNames = Object.keys(playing);
   const playingValues = playingNames.map((name) => playing[name]);
   const soundNames = Object.keys(sounds);
@@ -143,6 +143,13 @@ describe('howlerIntegration', () => {
       soundValues.forEach((sound) => {
         expect(sound.fade).to.be.a('function');
       });
+    });
+
+    it('has a method for deleting a sound id', () => {
+      const id = howlerIntegration.play('allSounds', 'boom');
+      expect(playingValues[2].has(id)).to.equal(true);
+      howlerIntegration.removeId(id);
+      expect(playingValues[2].has(id)).to.equal(false);
     });
   });
 });
