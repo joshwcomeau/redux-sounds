@@ -6,7 +6,7 @@ global.document = window.document;
 global.Audio = window.Audio;
 global.HTMLElement = window.HTMLElement;
 global.HTMLMediaElement = window.HTMLMediaElement;
-global.HTMLMediaElement.prototype.load = function() {};
-global.HTMLMediaElement.prototype.play = function() {};
+global.HTMLMediaElement.prototype.load = function () {};
+global.HTMLMediaElement.prototype.play = function () {};
 
 global.HowlerGlobal = HowlerGlobal;
