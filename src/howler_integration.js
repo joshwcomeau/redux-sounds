@@ -5,6 +5,7 @@ module.exports = {
   removeId(id) {
     Object.keys(this.playing).forEach((key) => this.playing[key].delete(id));
   },
+
   initialize(soundsData) {
     let soundOptions;
     // { String: Set[Integer] } Map of currently playing ids for each unique sound name
@@ -46,6 +47,50 @@ module.exports = {
         })
       };
     }, {});
+
+    return this.sounds;
+  },
+
+  add(soundsData) {
+    if (!isObjectWithValues(this.sounds)) return this.initialize(soundsData);
+    let soundOptions;
+    const soundNames = Object.getOwnPropertyNames(soundsData);
+
+    soundNames.reduce((memo, name) => {
+      soundOptions = soundsData[name];
+
+      // Allow strings instead of objects, for when all that is needed is a URL
+      if (typeof soundOptions === 'string') {
+        soundOptions = { src: [soundOptions] };
+      }
+
+      const sprites = soundOptions.sprite;
+      if (isObjectWithValues(sprites)) {
+        Object.keys(sprites).forEach((spriteName) => {
+          this.playing[name + spriteName] = new Set();
+        });
+      } else {
+        this.playing[name] = new Set();
+      }
+      return {
+        ...memo,
+        [name]: new Howl({
+          ...soundOptions,
+          onend: (id) => {
+            if (soundOptions.onend) {
+              soundOptions.onend(id);
+            }
+            this.removeId(id);
+          },
+          onstop: (id) => {
+            if (soundOptions.onstop) {
+              soundOptions.onstop(id);
+            }
+            this.removeId(id);
+          }
+        })
+      };
+    }, this.sounds);
 
     return this.sounds;
   },

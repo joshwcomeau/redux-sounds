@@ -10,6 +10,11 @@
     "expect": true
   },
   "rules": {
+    "operator-linebreak": [
+      1,
+      "after",
+      { "overrides": { "?": "before", ":": "before" } }
+    ],
     "arrow-parens": [1, "always"],
     "space-before-function-paren": 0,
     "padded-blocks": 0,
@@ -17,7 +22,7 @@
     "comma-dangle": [2, "never"],
     "no-underscore-dangle": 0,
     "no-use-before-define": [2, "nofunc"],
-    "no-unused-vars": [2, {"vars": "all", "argsIgnorePattern": "store"}],
+    "no-unused-vars": [2, { "vars": "all", "argsIgnorePattern": "store" }],
     "no-unused-expressions": 0
   },
   "parserOptions": {

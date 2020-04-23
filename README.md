@@ -1,14 +1,12 @@
-Redux Sounds
-============
+# Redux Sounds
 
 [![build status](https://img.shields.io/travis/joshwcomeau/redux-sounds/master.svg?style=flat-square)](https://travis-ci.org/joshwcomeau/redux-sounds)
 [![npm version](https://img.shields.io/npm/v/redux-sounds.svg?style=flat-square)](https://www.npmjs.com/package/redux-sounds)
 [![Coverage Status](https://coveralls.io/repos/github/joshwcomeau/redux-sounds/badge.svg?branch=master&cache=buster)](https://coveralls.io/github/joshwcomeau/redux-sounds?branch=master)
 
-
 Redux [middleware](http://rackt.org/redux/docs/advanced/Middleware.html) that lets you easily trigger sound effects on actions. Makes it completely trivial to do so, by adding a `meta` property to any action:
 
-```js
+```javascript
 export function danceMoves() {
   return {
     type: 'DANCE_MOVES',
@@ -17,34 +15,31 @@ export function danceMoves() {
         play: 'groovyMusic'
       }
     }
-  }
-};
+  };
+}
 ```
 
 Uses [Howler.js](https://github.com/goldfire/howler.js/) under the hood, which uses [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) when available, with a graceful fallback to [HTML5 Audio](https://en.wikipedia.org/wiki/HTML5_Audio).
-
 
 ## Installation
 
 #### Preferred: NPM
 
-```js
+```
 npm i -S redux-sounds
 ```
-
 
 #### Also available: UMD
 
 UMD builds are also available, for single-file usage or quick hacking in a JSbin. Simply add `dist/redux-sounds.js` or `dist/redux-sounds.min.js` to your file in a `<script>` tag. The middleware will be available under `ReduxSounds`.
 
-
 ## Setup
 
-`soundsMiddleware` works similarly to other Redux middleware, with one important exception: it needs to be pre-loaded with sound data.
+`soundsMiddleware` works similarly to other Redux middleware, and can be pre-loaded with sound data.
 
 Here's an example setup:
 
-```js
+```javascript
 /* configure-store.js */
 
 import { createStore, combineReducers, applyMiddleware } from 'redux';
@@ -72,14 +67,14 @@ const soundsData = {
   //   - the start time of the sound, in milliseconds
   //   - the duration of the sound, in milliseconds
   jumps: {
-    src: [ 'https://s3.amazonaws.com/bucketName/jumps.mp3' ],
+    src: ['https://s3.amazonaws.com/bucketName/jumps.mp3'],
     sprite: {
       lowJump: [0, 1000],
       longJump: [1000, 2500],
       antiGravityJump: [3500, 10000]
     }
   }
-}
+};
 
 // Pre-load our middleware with our sounds data.
 const loadedSoundsMiddleware = soundsMiddleware(soundsData);
@@ -90,7 +85,6 @@ const store = createStore(gameReducer, applyMiddleware(loadedSoundsMiddleware));
 ```
 
 Howler has much more advanced capabilities, including specifying callbacks to run when the sound has completed (or failed to complete), looping sounds, fading in/out, and much more. See [their documentation](https://github.com/goldfire/howler.js/#properties) for the complete list.
-
 
 ## Usage
 
@@ -103,31 +97,33 @@ Continuing from our example above, we have 5 possible sounds: `endTurn`, `winGam
 The Howler methods other than `play` follow almost the same API as Howler:
 
 **Howler**
+
 ```javascript
 sound.fade(1, 0, 1000, id);
 sound.stop(id);
 ```
 
 **redux-sounds action**
+
 ```javascript
 // fade
 meta: {
   sound: {
-    fade: ['endTurn', 1, 0, 1000]
+    fade: ['endTurn', 1, 0, 1000];
   }
 }
 
 // stop
 meta: {
   sound: {
-    stop: 'endTurn'
+    stop: 'endTurn';
   }
 }
 ```
 
 For sprites, separate the sound name from the sprite name with a period (`.`). A couple examples of the actions we can dispatch:
 
-```js
+```javascript
 /* game-actions.js */
 
 export function endTurn() {
@@ -135,10 +131,10 @@ export function endTurn() {
     type: 'END_TURN',
     meta: {
       sound: {
-        play :'endTurn'
+        play: 'endTurn'
       }
     }
-  }
+  };
 }
 
 export function lowJump() {
@@ -149,7 +145,7 @@ export function lowJump() {
         play: 'jumps.lowJump'
       }
     }
-  }
+  };
 }
 
 export function lowJumpStop() {
@@ -160,7 +156,7 @@ export function lowJumpStop() {
         stop: 'jumps.lowJump'
       }
     }
-  }
+  };
 }
 
 export function lowJumpFade() {
@@ -168,17 +164,47 @@ export function lowJumpFade() {
     type: 'LOW_JUMP_STOP',
     meta: {
       sound: {
-        fade: ['jumps.lowJump', 0 , 1, 2]
+        fade: ['jumps.lowJump', 0, 1, 2]
       }
     }
-  }
+  };
 }
-
 ```
 
 _**Note:** It is worth noting that it is unlikely that you'll need to create new actions for your sound effects; You'll probably want to just add `meta` properties to pre-existing actions, so that they play a sound in addition to whatever else they do (change the reducer state, trigger other middleware, etc)._  
 _**Also Note:** When a sound is playing multiple times at once, Howler methods (stop, fade, pause, etc.) will apply to **all** playing instances_
 
+### Adding more sounds via actions
+
+```javascript
+/* add-sounds-actions.js */
+const coinSoundsData = {
+  heavyCoin: 'https://s3.amazonaws.com/bucketName/gold_coin.mp3',
+  lightCoin: {
+    src: 'https://s3.amazonaws.com/bucketName/gold_coin.mp3', // just lower volume
+    volume: 0.75
+  },
+  randomCoins: {
+    src: ['https://s3.amazonaws.com/bucketName/coin_collection.mp3'],
+    sprite: {
+      one: [0, 1000],
+      two: [1000, 2500],
+      three: [3500, 10000]
+    }
+  }
+};
+
+export function addCoinSounds() {
+  return {
+    type: 'ADD_COIN_SOUNDS',
+    meta: {
+      sound: {
+        add: coinSoundsData
+      }
+    }
+  };
+}
+```
 
 ## Troubleshooting
 
@@ -191,22 +217,25 @@ When you dispatch an action with a `meta.sound` property, redux-sounds looks for
 To understand why this is happening, let's examine the link between registering a sound when the store is created, and triggering a sound when an action is dispatched.
 
 When you create your store, you pass in an object like so:
-```js
+
+```javascript
 const soundsData = {
   foo: 'path/to/foo.mp3'
 };
 ```
 
 The keys in that object must correspond to the value specified when you dispatch your action:
-```js
+
+```javascript
 dispatch({
   type: 'ACTION_NAME',
-  meta: { sound: { play: 'foo' }
+  meta: {
+    sound: { play: 'foo' }
+  }
 });
 ```
 
 Make sure these two values are the same!
-
 
 #### Invalid sprite
 
@@ -218,11 +247,11 @@ If redux-sounds has a sound registered under 'foo', but that sound has no specif
 
 It is possible that there is a typo, either in the `meta.sound` property or the sprite data passed in on initialization.
 
-
 #### A `missingSoundData` error throws when I try loading the page.
 
 Unlike other middleware, you cannot simply pass it to Redux as-is:
-```js
+
+```javascript
 import soundsMiddleware from 'redux-sounds';
 
 // DON'T do this:
@@ -233,7 +262,7 @@ The reason for this is that before the store can be registered, you need to pass
 
 You must first invoke `soundsMiddleware` with a `soundsData` object:
 
-```js
+```javascript
 import soundsMiddleware from 'redux-sounds';
 import { soundsData } from '../data/sounds';
 
@@ -243,27 +272,23 @@ const loadedSoundsMiddleware = soundsMiddleware(soundsData);
 const store = createStore(rootReducer, applyMiddleware(loadedSoundsMiddleware));
 ```
 
-
 ## Tests
 
 To run: `npm run test`
 
 Using Mocha for test-running, Chai Expect for assertions, and Istanbul for test coverage.
 
-While test coverage is 100%, because the tests run in Node, and Node has no ability to play sounds, the actual output is not tested.
+While test coverage is high, because the tests run in Node, and Node has no ability to play sounds, the actual output is not tested.
 
 Because I've delegated these duties to Howler, though, I don't feel too bad about that. I check to make sure the right info is passed to Howler at the right time; Howler's tests can take it from there.
-
 
 ## Planned functionality
 
 Got ideas for must-have functionality? Create an issue and let's discuss =)
 
-
 ## Contributions
 
 Contributors welcome! Please discuss additional features with me before implementing them, and please supply tests along with any bug fixes.
-
 
 ## License
 

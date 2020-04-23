@@ -8,13 +8,19 @@ import chai, { expect } from 'chai';
 import { Howl } from 'howler';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import importFresh from 'import-fresh';
 
 import soundMiddleware from '../src/index';
 
 const howlerIntegration = require('../src/howler_integration');
 const { isObjectWithValues } = require('../src/utils');
 
+const howlerIntegration2 = importFresh('../src/howler_integration');
+const soundMiddleware2 = importFresh('../src/index');
+
 chai.use(sinonChai);
+const warnStub = sinon.stub(console, 'warn');
+const logStub = sinon.stub(console, 'log');
 
 const soundsData = {
   endTurn: 'path/to/sound.mp3',
@@ -28,6 +34,24 @@ const soundsData = {
       boom: [0, 1000],
       bang: [1500, 2000],
       crash: [2000, 2345]
+    }
+  }
+};
+
+// TODO: TEST ADDING SOUNDS TO EMPTY INTEGRATION
+
+const addedSoundsData = {
+  heavyCoin: 'https://s3.amazonaws.com/bucketName/gold_coin.mp3',
+  lightCoin: {
+    src: 'https://s3.amazonaws.com/bucketName/gold_coin.mp3', // just lower volume
+    volume: 0.75
+  },
+  randomCoins: {
+    src: ['https://s3.amazonaws.com/bucketName/coin_collection.mp3'],
+    sprite: {
+      one: [0, 1000],
+      two: [1000, 2500],
+      three: [3500, 10000]
     }
   }
 };
@@ -156,7 +180,6 @@ describe('howlerIntegration', () => {
 
 describe('soundMiddleware', () => {
   const next = sinon.spy();
-  const consoleStub = sinon.stub(console, 'warn');
 
   let storeHandler;
   let nextHandler;
@@ -164,13 +187,13 @@ describe('soundMiddleware', () => {
 
   afterEach(() => {
     // reset our spies and stubs
-    consoleStub.resetHistory();
+    warnStub.resetHistory();
     next.resetHistory();
   });
 
   describe('initialization', () => {
-    it('throws when initialized without sounds', () => {
-      expect(soundMiddleware).to.throw();
+    it('can be initialized without sounds', () => {
+      expect(soundMiddleware).not.to.throw();
     });
   });
 
@@ -201,7 +224,7 @@ describe('soundMiddleware', () => {
       };
       actionHandler(action);
 
-      expect(consoleStub).to.have.been.calledOnce;
+      expect(warnStub).to.have.been.calledOnce;
       expect(next).to.have.been.calledOnce;
     });
 
@@ -212,7 +235,7 @@ describe('soundMiddleware', () => {
       };
       actionHandler(action);
 
-      expect(consoleStub).to.have.been.calledOnce;
+      expect(warnStub).to.have.been.calledOnce;
       expect(next).to.have.been.calledOnce;
     });
 
@@ -223,7 +246,7 @@ describe('soundMiddleware', () => {
       };
       actionHandler(action);
 
-      expect(consoleStub).to.have.been.calledOnce;
+      expect(warnStub).to.have.been.calledOnce;
       expect(next).to.have.been.calledOnce;
     });
 
@@ -231,7 +254,7 @@ describe('soundMiddleware', () => {
       const action = { name: 'UNRELATED_ACTION' };
       actionHandler(action);
 
-      expect(consoleStub).to.not.have.been.called;
+      expect(warnStub).to.not.have.been.called;
       expect(next).to.have.been.calledOnce;
     });
 
@@ -239,13 +262,14 @@ describe('soundMiddleware', () => {
       const action = { name: 'WIN_GAME', meta: { sound: { play: 'winGame' } } };
       actionHandler(action);
 
-      expect(consoleStub).to.not.have.been.called;
+      expect(warnStub).to.not.have.been.called;
       expect(next).to.have.been.calledOnce;
     });
   });
 
   describe('howlerIntegration handoff', () => {
     let playSpy;
+    let addSpy;
     let endTurnSpy;
     let winGameSpy;
     let allSoundsSpy;
@@ -259,6 +283,7 @@ describe('soundMiddleware', () => {
 
     before(() => {
       playSpy = sinon.spy(howlerIntegration, 'play');
+      addSpy = sinon.spy(howlerIntegration, 'add');
       endTurnSpy = sinon.spy(howlerIntegration.sounds.endTurn, 'play');
       winGameSpy = sinon.spy(howlerIntegration.sounds.winGame, 'play');
       allSoundsSpy = sinon.spy(howlerIntegration.sounds.allSounds, 'play');
@@ -272,6 +297,7 @@ describe('soundMiddleware', () => {
     });
     afterEach(() => {
       playSpy.resetHistory();
+      addSpy.resetHistory();
       endTurnSpy.resetHistory();
       winGameSpy.resetHistory();
       allSoundsSpy.resetHistory();
@@ -285,6 +311,7 @@ describe('soundMiddleware', () => {
     });
     after(() => {
       playSpy.restore();
+      addSpy.restore();
       endTurnSpy.restore();
       winGameSpy.restore();
       allSoundsSpy.restore();
@@ -295,6 +322,50 @@ describe('soundMiddleware', () => {
       endTurnFadeSpy.restore();
       winGameFadeSpy.restore();
       allSoundsFadeSpy.restore();
+    });
+
+    describe('adds sounds', () => {
+      it('calls to add the sounds to the Howler integration', () => {
+        const action = {
+          type: 'ADD_COIN_SOUNDS',
+          meta: {
+            sound: {
+              add: addedSoundsData
+            }
+          }
+        };
+        actionHandler(action);
+
+        expect(addSpy).to.have.been.calledOnce;
+      });
+
+      it('contains a hashmap which includes the additional playing names', () => {
+        const action = {
+          type: 'ADD_COIN_SOUNDS',
+          meta: {
+            sound: {
+              add: addedSoundsData
+            }
+          }
+        };
+        actionHandler(action);
+
+        const playingNames = Object.keys(howlerIntegration.playing);
+        const expected = [
+          'endTurn',
+          'winGame',
+          'allSoundsboom',
+          'allSoundsbang',
+          'allSoundscrash',
+          'heavyCoin',
+          'lightCoin',
+          'randomCoinsone',
+          'randomCoinstwo',
+          'randomCoinsthree'
+        ];
+        expect(addSpy).to.have.been.calledOnce;
+        expect(expected).to.deep.equal(playingNames);
+      });
     });
 
     it('invokes .play with endTurn', () => {
@@ -466,6 +537,116 @@ describe('soundMiddleware', () => {
         2,
         howlerIntegration.playing.allSoundsboom.values().next().value
       );
+    });
+  });
+});
+
+describe('howler integration without sound data', () => {
+  const next = sinon.spy();
+  afterEach(() => {
+    // reset our spies and stubs
+    warnStub.resetHistory();
+    next.resetHistory();
+  });
+
+  const storeHandler = soundMiddleware2();
+  expect(storeHandler).to.be.a('function');
+
+  const nextHandler = storeHandler({});
+  expect(nextHandler).to.be.a('function');
+
+  const actionHandler = nextHandler(next);
+  const addAction = {
+    type: 'ADD_COIN_SOUNDS',
+    meta: {
+      sound: {
+        add: addedSoundsData
+      }
+    }
+  };
+  actionHandler(addAction);
+
+  describe('howler integration without initial sound data hand-off', () => {
+    let playSpy;
+    let addSpy;
+    let heavyCoinSpy;
+    let lightCoinSpy;
+    let randomCoinsSpy;
+    let proxySpy;
+    let heavyCoinStopSpy;
+    let lightCoinStopSpy;
+    let randomCoinsStopSpy;
+    let heavyCoinFadeSpy;
+    let lightCoinFadeSpy;
+    let randomCoinsFadeSpy;
+
+    before(() => {
+      playSpy = sinon.spy(howlerIntegration2, 'play');
+      addSpy = sinon.spy(howlerIntegration2, 'add');
+      heavyCoinSpy = sinon.spy(howlerIntegration2.sounds.heavyCoin, 'play');
+      lightCoinSpy = sinon.spy(howlerIntegration2.sounds.lightCoin, 'play');
+      randomCoinsSpy = sinon.spy(howlerIntegration2.sounds.randomCoins, 'play');
+      proxySpy = sinon.spy(howlerIntegration2, 'proxy');
+      heavyCoinStopSpy = sinon.spy(howlerIntegration2.sounds.heavyCoin, 'stop');
+      lightCoinStopSpy = sinon.spy(howlerIntegration2.sounds.lightCoin, 'stop');
+      randomCoinsStopSpy = sinon.spy(howlerIntegration2.sounds.randomCoins, 'stop');
+      heavyCoinFadeSpy = sinon.spy(howlerIntegration2.sounds.heavyCoin, 'fade');
+      lightCoinFadeSpy = sinon.spy(howlerIntegration2.sounds.lightCoin, 'fade');
+      randomCoinsFadeSpy = sinon.spy(howlerIntegration2.sounds.randomCoins, 'fade');
+    });
+    afterEach(() => {
+      playSpy.resetHistory();
+      addSpy.resetHistory();
+      heavyCoinSpy.resetHistory();
+      lightCoinSpy.resetHistory();
+      randomCoinsSpy.resetHistory();
+      proxySpy.resetHistory();
+      heavyCoinStopSpy.resetHistory();
+      lightCoinStopSpy.resetHistory();
+      randomCoinsStopSpy.resetHistory();
+      heavyCoinFadeSpy.resetHistory();
+      lightCoinFadeSpy.resetHistory();
+      randomCoinsFadeSpy.resetHistory();
+    });
+    after(() => {
+      playSpy.restore();
+      addSpy.restore();
+      heavyCoinSpy.restore();
+      lightCoinSpy.restore();
+      randomCoinsSpy.restore();
+      proxySpy.restore();
+      heavyCoinStopSpy.restore();
+      lightCoinStopSpy.restore();
+      randomCoinsStopSpy.restore();
+      heavyCoinFadeSpy.restore();
+      lightCoinFadeSpy.restore();
+      randomCoinsFadeSpy.restore();
+    });
+
+    describe('adds sounds', () => {
+      it('contains a hashmap which includes only the additional dynamic playing names', () => {
+        actionHandler(addAction);
+        const playingNames = Object.keys(howlerIntegration2.playing);
+        const expected = [
+          'heavyCoin',
+          'lightCoin',
+          'randomCoinsone',
+          'randomCoinstwo',
+          'randomCoinsthree'
+        ];
+        expect(addSpy).to.have.been.calledOnce;
+        expect(expected).to.deep.equal(playingNames);
+      });
+    });
+
+    it('invokes .play with heavyCoin', () => {
+      const heavyAction = { name: 'HEAVY_COIN', meta: { sound: { play: 'heavyCoin' } } };
+      actionHandler(heavyAction);
+
+      expect(playSpy).to.have.been.calledOnce;
+      expect(playSpy).to.have.been.calledWithExactly('heavyCoin', undefined);
+      expect(heavyCoinSpy).to.have.been.calledOnce;
+      expect(heavyCoinSpy).to.have.been.calledWithExactly(undefined);
     });
   });
 });

@@ -3,4 +3,5 @@ coverage
 *.log
 lib
 dist
+.nyc_output
 /.idea/
