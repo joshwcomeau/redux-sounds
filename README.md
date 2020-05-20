@@ -205,6 +205,49 @@ export function addCoinSounds() {
   };
 }
 ```
+### Callbacks
+The Howler callbacks `onplay`, `onstop`, and `onend` are currently supported
+
+```javascript
+const winPopup = {
+  type: 'SHOW_WIN_POPUP',
+  payload: 'You won'
+}
+
+const soundsData = {
+  randomCoins: {
+    src: ['https://s3.amazonaws.com/bucketName/coin_collection.mp3'],
+    sprite: {
+      one: [0, 1000],
+      two: [1000, 2500],
+      three: [3500, 10000]
+    },
+    onend: (id, dispatch) => dispatch(winPopup)
+  }
+};
+```
+
+### Playlist
+It is preferable to have your playlist merged as one continuous sounds. If that's not possible, you can 
+dispatch a "playlist" action like the example below.
+
+```javascript
+/* playlist-action.js */
+export function playlistSounds() {
+  return {
+    type: 'PLAYLIST_SOUNDS',
+    meta: {
+      sound: {
+        list: [
+          { play: 'jumps.lowJump' },
+          { play: 'jumps.longJump' },
+          { play: 'endTurn' }
+        ]
+      }
+    }
+  };
+}
+```
 
 ## Troubleshooting
 

@@ -21,6 +21,10 @@ function soundsMiddleware(soundsData) {
       }
       // skip action, no Howls initialized
       if (!isObjectWithValues(howlerIntegration.sounds)) return;
+      if (method === 'playlist') {
+        howlerIntegration.playlist(target);
+        return;
+      }
       if (Array.isArray(target)) {
         const [soundName, spriteName] = target[0].split('.');
         howlerIntegration.proxy(

@@ -6,7 +6,7 @@ module.exports = {
     Object.keys(this.playing).forEach((key) => this.playing[key].delete(id));
   },
 
-  initialize(soundsData) {
+  initialize(soundsData, dispatch) {
     let soundOptions;
     // { String: Set[Integer] } Map of currently playing ids for each unique sound name
     // Can also use `new Map()`
@@ -32,16 +32,16 @@ module.exports = {
         ...memo,
         [name]: new Howl({
           ...soundOptions,
+          onplay: (id) => {
+            if (soundOptions.onplay) soundOptions.onplay(id, dispatch);
+          },
           onend: (id) => {
-            if (soundOptions.onend) {
-              soundOptions.onend(id);
-            }
+            if (soundOptions.onend) soundOptions.onend(id, dispatch);
+            this.notifyend(id);
             this.removeId(id);
           },
           onstop: (id) => {
-            if (soundOptions.onstop) {
-              soundOptions.onstop(id);
-            }
+            if (soundOptions.onstop) soundOptions.onstop(id, dispatch);
             this.removeId(id);
           }
         })
@@ -51,7 +51,7 @@ module.exports = {
     return this.sounds;
   },
 
-  add(soundsData) {
+  add(soundsData, dispatch) {
     if (!isObjectWithValues(this.sounds)) return this.initialize(soundsData);
     let soundOptions;
     const soundNames = Object.getOwnPropertyNames(soundsData);
@@ -72,24 +72,30 @@ module.exports = {
       } else {
         this.playing[name] = new Set();
       }
-      return {
+      const { onplay, onstop, onend } = soundOptions;
+      const result = {
         ...memo,
         [name]: new Howl({
           ...soundOptions,
+          onplay: (id) => {
+            if (onplay) onplay(id, dispatch);
+          },
           onend: (id) => {
-            if (soundOptions.onend) {
-              soundOptions.onend(id);
-            }
+            if (onend) onend(id, dispatch);
             this.removeId(id);
+            if (this.playlistIds[id]) this.playlistIds[id](id);
           },
           onstop: (id) => {
-            if (soundOptions.onstop) {
-              soundOptions.onstop(id);
-            }
+            if (onstop) onstop(id);
             this.removeId(id);
           }
         })
       };
+      // Delete to keep the action serializable
+      delete soundOptions.onplay;
+      delete soundOptions.onend;
+      delete soundOptions.onstop;
+      return result;
     }, this.sounds);
 
     return this.sounds;
@@ -124,6 +130,25 @@ module.exports = {
       this.playing[soundName + spriteName].add(id);
     }
     return id;
+  },
+
+  playlist(queue) {
+    const playlistId = Math.random().toString().slice(2);
+    this.playlist[playlistId] = {
+      index: 0,
+      queue
+    };
+    const player = (prevId) => {
+      // eslint-disable-next-line no-plusplus
+      this.playlist[playlistId].index++;
+      const nextTrack = this.playlist[playlistId].queue[this.playlist[playlistId].index];
+      const nextId = this.play(nextTrack);
+      this.playlistIds[nextId] = player;
+      delete this.playlistIds[prevId];
+    };
+
+    const soundId = this.play(queue[0]);
+    this.playlistIds[soundId] = player;
   },
 
   howlMethod(soundName, spriteName = '', method, ...args) {
