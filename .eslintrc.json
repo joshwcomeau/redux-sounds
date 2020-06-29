@@ -20,6 +20,7 @@
     "padded-blocks": 0,
     "no-console": 0,
     "comma-dangle": [2, "never"],
+    "linebreak-style": 0,
     "no-underscore-dangle": 0,
     "no-use-before-define": [2, "nofunc"],
     "no-unused-vars": [2, { "vars": "all", "argsIgnorePattern": "store" }],
