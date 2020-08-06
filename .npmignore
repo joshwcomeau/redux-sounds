@@ -1,0 +1,11 @@
+node_modules
+.nyc_output
+coverage/
+test
+.gitignore
+Makefile
+.travis.yml
+yarn-error.log
+/*.tgz
+/.idea/
+/.yarn/
