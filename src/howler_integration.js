@@ -56,7 +56,7 @@ module.exports = {
     let soundOptions;
     const soundNames = Object.getOwnPropertyNames(soundsData);
 
-    soundNames.reduce((memo, name) => {
+    this.sounds = soundNames.reduce((memo, name) => {
       soundOptions = soundsData[name];
 
       // Allow strings instead of objects, for when all that is needed is a URL
@@ -98,6 +98,8 @@ module.exports = {
       return result;
     }, this.sounds);
 
+    console.log(soundsData);
+    console.log(this.playing);
     return this.sounds;
   },
 

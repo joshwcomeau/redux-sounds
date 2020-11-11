@@ -56,6 +56,22 @@ const addedSoundsData = {
   }
 };
 
+const moreAddedSoundsData = {
+  heavierCoin: 'https://s3.amazonaws.com/bucketName/uranium_coin.mp3',
+  lighterCoin: {
+    src: 'https://s3.amazonaws.com/bucketName/magnesium_coin.mp3',
+    volume: 0.75
+  },
+  radCoins: {
+    src: ['https://s3.amazonaws.com/bucketName/rad_coin_collection.mp3'],
+    sprite: {
+      one: [0, 1000],
+      two: [1000, 2500],
+      three: [3500, 10000]
+    }
+  }
+};
+
 describe('utils', () => {
   const truthy = [{ hello: 'world' }];
   const falsy = [
@@ -365,6 +381,61 @@ describe('soundMiddleware', () => {
         ];
         expect(addSpy).to.have.been.calledOnce;
         expect(expected).to.deep.equal(playingNames);
+      });
+
+      it('can add sounds dynamically multiple times', () => {
+        const action = {
+          type: 'ADD_COIN_SOUNDS',
+          meta: {
+            sound: {
+              add: addedSoundsData
+            }
+          }
+        };
+        const action2 = {
+          type: 'ADD_COIN_SOUNDS_1',
+          meta: {
+            sound: {
+              add: moreAddedSoundsData
+            }
+          }
+        };
+        actionHandler(action);
+        actionHandler(action2);
+
+        const playingNames = Object.keys(howlerIntegration.playing);
+        const soundNames = Object.keys(howlerIntegration.sounds);
+        const expectedPlaying = [
+          'endTurn',
+          'winGame',
+          'allSoundsboom',
+          'allSoundsbang',
+          'allSoundscrash',
+          'heavyCoin',
+          'lightCoin',
+          'randomCoinsone',
+          'randomCoinstwo',
+          'randomCoinsthree',
+          'heavierCoin',
+          'lighterCoin',
+          'radCoinsone',
+          'radCoinstwo',
+          'radCoinsthree'
+        ];
+        const expectedSounds = [
+          'endTurn',
+          'winGame',
+          'allSounds',
+          'heavyCoin',
+          'lightCoin',
+          'randomCoins',
+          'heavierCoin',
+          'lighterCoin',
+          'radCoins'
+        ];
+        expect(addSpy).to.have.been.calledTwice;
+        expect(expectedPlaying).to.deep.equal(playingNames);
+        expect(expectedSounds).to.deep.equal(soundNames);
       });
     });
 
