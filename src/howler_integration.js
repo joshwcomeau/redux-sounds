@@ -7,13 +7,12 @@ module.exports = {
   },
 
   initialize(soundsData, dispatch) {
-    let soundOptions;
     // { String: Set[Integer] } Map of currently playing ids for each unique sound name
     // Can also use `new Map()`
     this.playing = Object.create(null);
     const soundNames = Object.getOwnPropertyNames(soundsData);
     this.sounds = soundNames.reduce((memo, name) => {
-      soundOptions = soundsData[name];
+      let soundOptions = soundsData[name];
 
       // Allow strings instead of objects, for when all that is needed is a URL
       if (typeof soundOptions === 'string') {
@@ -53,11 +52,10 @@ module.exports = {
 
   add(soundsData, dispatch) {
     if (!isObjectWithValues(this.sounds)) return this.initialize(soundsData);
-    let soundOptions;
     const soundNames = Object.getOwnPropertyNames(soundsData);
 
     this.sounds = soundNames.reduce((memo, name) => {
-      soundOptions = soundsData[name];
+      let soundOptions = soundsData[name];
 
       // Allow strings instead of objects, for when all that is needed is a URL
       if (typeof soundOptions === 'string') {
