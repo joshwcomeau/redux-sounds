@@ -95,8 +95,6 @@ module.exports = {
       return result;
     }, this.sounds);
 
-    console.log(soundsData);
-    console.log(this.playing);
     return this.sounds;
   },
 
