@@ -36,7 +36,9 @@ module.exports = {
           },
           onend: (id) => {
             if (soundOptions.onend) soundOptions.onend(id, dispatch);
-            this.removeId(id);
+            if (!soundOptions.loop) {
+              this.removeId(id);
+            }
           },
           onstop: (id) => {
             if (soundOptions.onstop) soundOptions.onstop(id, dispatch);
@@ -79,7 +81,9 @@ module.exports = {
           },
           onend: (id) => {
             if (onend) onend(id, dispatch);
-            this.removeId(id);
+            if (!soundOptions.loop) {
+              this.removeId(id);
+            }
             if (this.playlistIds[id]) this.playlistIds[id](id);
           },
           onstop: (id) => {
