@@ -36,7 +36,6 @@ module.exports = {
           },
           onend: (id) => {
             if (soundOptions.onend) soundOptions.onend(id, dispatch);
-            this.notifyend(id);
             this.removeId(id);
           },
           onstop: (id) => {
