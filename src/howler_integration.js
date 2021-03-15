@@ -7,13 +7,12 @@ module.exports = {
   },
 
   initialize(soundsData, dispatch) {
-    let soundOptions;
     // { String: Set[Integer] } Map of currently playing ids for each unique sound name
     // Can also use `new Map()`
     this.playing = Object.create(null);
     const soundNames = Object.getOwnPropertyNames(soundsData);
     this.sounds = soundNames.reduce((memo, name) => {
-      soundOptions = soundsData[name];
+      let soundOptions = soundsData[name];
 
       // Allow strings instead of objects, for when all that is needed is a URL
       if (typeof soundOptions === 'string') {
@@ -37,8 +36,9 @@ module.exports = {
           },
           onend: (id) => {
             if (soundOptions.onend) soundOptions.onend(id, dispatch);
-            this.notifyend(id);
-            this.removeId(id);
+            if (!soundOptions.loop) {
+              this.removeId(id);
+            }
           },
           onstop: (id) => {
             if (soundOptions.onstop) soundOptions.onstop(id, dispatch);
@@ -53,11 +53,10 @@ module.exports = {
 
   add(soundsData, dispatch) {
     if (!isObjectWithValues(this.sounds)) return this.initialize(soundsData);
-    let soundOptions;
     const soundNames = Object.getOwnPropertyNames(soundsData);
 
     this.sounds = soundNames.reduce((memo, name) => {
-      soundOptions = soundsData[name];
+      let soundOptions = soundsData[name];
 
       // Allow strings instead of objects, for when all that is needed is a URL
       if (typeof soundOptions === 'string') {
@@ -82,7 +81,9 @@ module.exports = {
           },
           onend: (id) => {
             if (onend) onend(id, dispatch);
-            this.removeId(id);
+            if (!soundOptions.loop) {
+              this.removeId(id);
+            }
             if (this.playlistIds[id]) this.playlistIds[id](id);
           },
           onstop: (id) => {
@@ -98,8 +99,6 @@ module.exports = {
       return result;
     }, this.sounds);
 
-    console.log(soundsData);
-    console.log(this.playing);
     return this.sounds;
   },
 
