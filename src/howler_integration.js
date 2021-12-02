@@ -84,7 +84,9 @@ module.exports = {
             if (!soundOptions.loop) {
               this.removeId(id);
             }
-            if (this.playlistIds[id]) this.playlistIds[id](id);
+            if (this.playlistIds && this.playlistIds[id]) {
+              this.playlistIds[id](id);
+            }
           },
           onstop: (id) => {
             if (onstop) onstop(id);
