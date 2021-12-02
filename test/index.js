@@ -660,10 +660,16 @@ describe('howler integration without sound data', () => {
       proxySpy = sinon.spy(howlerIntegration2, 'proxy');
       heavyCoinStopSpy = sinon.spy(howlerIntegration2.sounds.heavyCoin, 'stop');
       lightCoinStopSpy = sinon.spy(howlerIntegration2.sounds.lightCoin, 'stop');
-      randomCoinsStopSpy = sinon.spy(howlerIntegration2.sounds.randomCoins, 'stop');
+      randomCoinsStopSpy = sinon.spy(
+        howlerIntegration2.sounds.randomCoins,
+        'stop'
+      );
       heavyCoinFadeSpy = sinon.spy(howlerIntegration2.sounds.heavyCoin, 'fade');
       lightCoinFadeSpy = sinon.spy(howlerIntegration2.sounds.lightCoin, 'fade');
-      randomCoinsFadeSpy = sinon.spy(howlerIntegration2.sounds.randomCoins, 'fade');
+      randomCoinsFadeSpy = sinon.spy(
+        howlerIntegration2.sounds.randomCoins,
+        'fade'
+      );
     });
     afterEach(() => {
       playSpy.resetHistory();
@@ -711,7 +717,10 @@ describe('howler integration without sound data', () => {
     });
 
     it('invokes .play with heavyCoin', () => {
-      const heavyAction = { name: 'HEAVY_COIN', meta: { sound: { play: 'heavyCoin' } } };
+      const heavyAction = {
+        name: 'HEAVY_COIN',
+        meta: { sound: { play: 'heavyCoin' } }
+      };
       actionHandler(heavyAction);
 
       expect(playSpy).to.have.been.calledOnce;

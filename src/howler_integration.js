@@ -144,7 +144,8 @@ module.exports = {
     const player = (prevId) => {
       // eslint-disable-next-line no-plusplus
       this.playlist[playlistId].index++;
-      const nextTrack = this.playlist[playlistId].queue[this.playlist[playlistId].index];
+      const nextTrack =
+        this.playlist[playlistId].queue[this.playlist[playlistId].index];
       const nextId = this.play(nextTrack);
       this.playlistIds[nextId] = player;
       delete this.playlistIds[prevId];
