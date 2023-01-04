@@ -205,14 +205,16 @@ export function addCoinSounds() {
   };
 }
 ```
+
 ### Callbacks
+
 The Howler callbacks `onplay`, `onstop`, and `onend` are currently supported
 
 ```javascript
 const winPopup = {
   type: 'SHOW_WIN_POPUP',
   payload: 'You won'
-}
+};
 
 const soundsData = {
   randomCoins: {
@@ -228,7 +230,8 @@ const soundsData = {
 ```
 
 ### Playlist
-It is preferable to have your playlist merged as one continuous sounds. If that's not possible, you can 
+
+It is preferable to have your playlist merged as one continuous sounds. If that's not possible, you can
 dispatch a "playlist" action like the example below.
 
 ```javascript

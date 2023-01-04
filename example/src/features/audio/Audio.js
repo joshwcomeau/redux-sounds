@@ -32,10 +32,7 @@ export function Audio() {
         </button>
       </div>
       <div className={styles.row}>
-        <button
-          className={styles.button}
-          onClick={() => dispatch(addSound2())}
-        >
+        <button className={styles.button} onClick={() => dispatch(addSound2())}>
           Add sound 2
         </button>
         <button

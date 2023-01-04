@@ -4,7 +4,7 @@ import audioReducer from '../features/audio/audioSlice';
 
 const soundsData = {
   // If no additional configuration is necessary, we can just pass a string  as the path to our file.
-  endTurn: `${process.env.PUBLIC_URL}/sound1.mp3`,
+  endTurn: `${process.env.PUBLIC_URL}/sound1.mp3`
 
   // We will be dynamically loading these commented out sounds
   // heavyCoin: {
