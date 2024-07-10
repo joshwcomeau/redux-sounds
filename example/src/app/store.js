@@ -1,10 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
-import soundsMiddleware from '../../../src';
+import soundsMiddleware from 'redux-sounds';
 import audioReducer from '../features/audio/audioSlice';
 
 const soundsData = {
   // If no additional configuration is necessary, we can just pass a string  as the path to our file.
-  endTurn: `${process.env.PUBLIC_URL}/sound1.mp3`
+  endTurn: '/sound1.mp3'
 
   // We will be dynamically loading these commented out sounds
   // heavyCoin: {

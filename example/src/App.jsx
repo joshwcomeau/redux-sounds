@@ -1,14 +1,13 @@
-import React from 'react';
-import logo from './logo.svg';
+import reactLogo from './assets/react.svg'
 import { Audio } from './features/audio/Audio';
-import './App.css';
+import './App.css'
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Audio />
+        <img src={reactLogo} className="App-logo" alt="logo"/>
+        <Audio/>
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
@@ -25,7 +24,7 @@ function App() {
         </span>
       </header>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

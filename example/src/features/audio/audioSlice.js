@@ -1,6 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
-
-import { createAction } from '@reduxjs/toolkit';
+import { createSlice, createAction } from '@reduxjs/toolkit';
 
 export const playEndTurn = createAction('audio/PLAY_END_TURN', () => {
   return {
@@ -29,8 +27,8 @@ export const addSound2 = createAction('audio/ADD_SOUND_TWO', () => {
         add: {
           heavyCoin: {
             src: [
-              `${process.env.PUBLIC_URL}/sound2.mp3`,
-              `${process.env.PUBLIC_URL}/sound2.webm`
+              '/sound2.mp3',
+              '/sound2.webm'
             ],
             volume: 0.75
           }
