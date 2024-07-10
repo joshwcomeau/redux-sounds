@@ -1,7 +1,7 @@
 {
   "name": "redux-sounds",
   "type": "module",
-  "version": "4.0.0-beta.1",
+  "version": "4.0.0-beta.2",
   "sideEffects": false,
   "description": "Sound effect middleware for Redux.",
   "main": "dist/umd/redux-sounds.js",

@@ -8,7 +8,9 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 const base = {
   entry: './src/index.js',
   mode: 'production',
-  externals: [/howler\/dist/],
+  externals: [{
+    howler: 'howler/dist/howler.core.min.js'
+  }],
   resolve: {
     extensions: ['.js', '.cjs', '.mjs', '.json', '.jsx', '.wasm']
   }
@@ -17,6 +19,7 @@ const base = {
 const config = [
   {
     ...base,
+    externalsType: 'commonjs',
     output: {
       chunkFormat: 'commonjs',
       module: false,
@@ -80,6 +83,7 @@ const config = [
   },
   {
     ...base,
+    externalsType: 'module',
     output: {
       chunkFormat: 'module',
       module: true,
