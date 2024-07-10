@@ -8,9 +8,7 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 const base = {
   entry: './src/index.js',
   mode: 'production',
-  externals: {
-    howler: 'howler'
-  },
+  externals: [/howler\/dist/],
   resolve: {
     extensions: ['.js', '.cjs', '.mjs', '.json', '.jsx', '.wasm']
   }

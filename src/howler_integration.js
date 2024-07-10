@@ -1,4 +1,4 @@
-import { Howl } from 'howler';
+import { Howl } from 'howler/dist/howler.core.min';
 import isObjectWithValues from './utils';
 
 export default {
