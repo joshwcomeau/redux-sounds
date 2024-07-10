@@ -1,5 +1,0 @@
---require test/howlerFixSetup.js
---require babel-core/register
---require jsdom-global/register
---require whatwg-fetch
-test/index.js

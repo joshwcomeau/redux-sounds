@@ -5,3 +5,12 @@ lib
 dist
 .nyc_output
 /.idea/
+
+# Yarn
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

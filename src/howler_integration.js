@@ -1,7 +1,7 @@
-const { Howl } = require('howler');
-const { isObjectWithValues } = require('./utils');
+import { Howl } from 'howler';
+import isObjectWithValues from './utils';
 
-module.exports = {
+export default {
   removeId(id) {
     Object.keys(this.playing).forEach((key) => this.playing[key].delete(id));
   },
@@ -155,6 +155,7 @@ module.exports = {
     this.playlistIds[soundId] = player;
   },
 
+  // eslint-disable-next-line default-param-last
   howlMethod(soundName, spriteName = '', method, ...args) {
     const sound = this.sounds[soundName];
     if (this.playing[soundName + spriteName]) {

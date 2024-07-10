@@ -9,3 +9,4 @@ yarn-error.log
 /*.tgz
 /.idea/
 /.yarn/
+lib

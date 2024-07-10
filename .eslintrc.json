@@ -1,9 +1,10 @@
 {
-  "extends": ["airbnb-base"],
+  "extends": ["airbnb-base", "plugin:jest/recommended", "plugin:jest/style"],
+  "plugins": ["jest"],
   "env": {
+    "jest/globals": true,
     "browser": true,
     "es6": true,
-    "mocha": true,
     "node": true
   },
   "globals": {
@@ -27,7 +28,7 @@
     "no-unused-expressions": 0
   },
   "parserOptions": {
-    "ecmaVersion": 9,
+    "ecmaVersion": 14,
     "sourceType": "module"
   }
 }

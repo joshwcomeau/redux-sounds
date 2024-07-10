@@ -1,5 +1,5 @@
-const howlerIntegration = require('./howler_integration');
-const { isObjectWithValues } = require('./utils');
+import howlerIntegration from './howler_integration';
+import isObjectWithValues from './utils';
 
 function soundsMiddleware(soundsData) {
   // Set up our sounds object, and pre-load all audio files.
@@ -42,4 +42,4 @@ function soundsMiddleware(soundsData) {
   };
 }
 
-module.exports = soundsMiddleware;
+export default soundsMiddleware;

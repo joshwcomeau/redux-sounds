@@ -23,15 +23,13 @@ Uses [Howler.js](https://github.com/goldfire/howler.js/) under the hood, which u
 
 ## Installation
 
-#### Preferred: NPM
-
-```
-npm i -S redux-sounds
+```bash
+npm i -S redux-sounds howler
 ```
 
 #### Also available: UMD
 
-UMD builds are also available, for single-file usage or quick hacking in a JSbin. Simply add `dist/redux-sounds.js` or `dist/redux-sounds.min.js` to your file in a `<script>` tag. The middleware will be available under `ReduxSounds`.
+UMD builds are also available, for single-file usage or quick hacking in a JSbin. Simply add `dist/umd/redux-sounds.js` to your file in a `<script>` tag. The middleware will be available under `ReduxSounds`.
 
 ## Setup
 
