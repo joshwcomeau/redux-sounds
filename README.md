@@ -29,7 +29,12 @@ npm i -S redux-sounds howler
 
 #### Also available: UMD
 
-UMD builds are also available, for single-file usage or quick hacking in a JSbin. Simply add `dist/umd/redux-sounds.js` to your file in a `<script>` tag. The middleware will be available under `ReduxSounds`.
+UMD builds are also available, for single-file usage or legacy browser support. Simply add `dist/umd/redux-sounds.js` to your file in a `<script>` tag. The middleware will be available under `ReduxSounds`.
+
+| Build | Browser support                                                                                             | Size         |
+| ----- | ----------------------------------------------------------------------------------------------------------- | ------------ |
+| ESM   | [`defaults and fully supports es6-module`](https://browsersl.ist/#q=defaults+and+fully+supports+es6-module) | 2.94&nbsp;KB |
+| UMD   | [`>0.3%, defaults`](https://browsersl.ist/#q=%3E0.3%25%2C+defaults)                                         | 4.03&nbsp;KB |
 
 ## Setup
 
