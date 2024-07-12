@@ -1,10 +1,10 @@
 # Redux Sounds
 
-[![build status](https://img.shields.io/travis/joshwcomeau/redux-sounds/master.svg?style=flat-square)](https://travis-ci.org/joshwcomeau/redux-sounds)
+[![size](https://deno.bundlejs.com/badge?badge=minify&q=redux-sounds@beta&config={%22esbuild%22:{%22external%22:[%22howler/dist/howler.core.min.js%22]}})](https://bundlejs.com/?q=redux-sounds%404.0.0-beta.3&config=%7B%22esbuild%22%3A%7B%22external%22%3A%5B%22howler%2Fdist%2Fhowler.core.min.js%22%5D%7D%7D)
 [![npm version](https://img.shields.io/npm/v/redux-sounds.svg?style=flat-square)](https://www.npmjs.com/package/redux-sounds)
 [![Coverage Status](https://coveralls.io/repos/github/joshwcomeau/redux-sounds/badge.svg?branch=master&cache=buster)](https://coveralls.io/github/joshwcomeau/redux-sounds?branch=master)
 
-Redux [middleware](http://rackt.org/redux/docs/advanced/Middleware.html) that lets you easily trigger sound effects on actions. Makes it completely trivial to do so, by adding a `meta` property to any action:
+Redux [middleware](https://redux.js.org/tutorials/fundamentals/part-4-store#using-middleware) that lets you easily trigger sound effects on actions. Makes it completely trivial to do so, by adding a `meta` property to any action:
 
 ```javascript
 export function danceMoves() {
@@ -33,8 +33,8 @@ UMD builds are also available, for single-file usage or legacy browser support. 
 
 | Build | Browser support                                                                                             | Size         |
 | ----- | ----------------------------------------------------------------------------------------------------------- | ------------ |
-| ESM   | [`defaults and fully supports es6-module`](https://browsersl.ist/#q=defaults+and+fully+supports+es6-module) | 2.94&nbsp;KB |
-| UMD   | [`>0.3%, defaults`](https://browsersl.ist/#q=%3E0.3%25%2C+defaults)                                         | 4.03&nbsp;KB |
+| ESM   | [`defaults and fully supports es6-module`](https://browsersl.ist/#q=defaults+and+fully+supports+es6-module) | 2.77&nbsp;kB |
+| UMD   | [`> 0.3%, defaults`](https://browsersl.ist/#q=%3E0.3%25%2C+defaults)                                        | 2.98&nbsp;kB |
 
 ## Setup
 
@@ -87,13 +87,13 @@ const store = createStore(gameReducer, applyMiddleware(loadedSoundsMiddleware));
 // (Using the condensed createStore released in Redux v3.1.0)
 ```
 
-Howler has much more advanced capabilities, including specifying callbacks to run when the sound has completed (or failed to complete), looping sounds, fading in/out, and much more. See [their documentation](https://github.com/goldfire/howler.js/#properties) for the complete list.
+Howler has much more advanced capabilities, including specifying callbacks to run when the sound has completed (or failed to complete), looping sounds, fading in/out, and much more. See [their documentation](https://github.com/goldfire/howler.js#core) for the complete list.
 
 ## Usage
 
 Once your store is created, dispatching actions that trigger sounds is simple.
 
-Using the convention established in the [rafScheduler Middleware example](https://github.com/reactjs/redux/blob/master/docs/advanced/Middleware.md#seven-examples), a new `meta` property can be attached to actions. This `meta` property should have a `sound` key, and its value should be that of a registered sound.
+Using the [Flux Standard Actions](https://redux.js.org/tutorials/fundamentals/part-7-standard-patterns#flux-standard-actions) convention, a new `meta` property can be attached to actions. This `meta` property should have a `sound` key, and its value should be that of a registered sound.
 
 Continuing from our example above, we have 5 possible sounds: `endTurn`, `winGame`, and 3 flavors of jumps.
 
@@ -323,7 +323,7 @@ const store = createStore(rootReducer, applyMiddleware(loadedSoundsMiddleware));
 
 ## Tests
 
-To run: `npm run test`
+To run: `yarn test`
 
 Using Mocha for test-running, Chai Expect for assertions, and Istanbul for test coverage.
 
