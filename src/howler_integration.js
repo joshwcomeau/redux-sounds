@@ -1,4 +1,5 @@
-import { Howl } from 'howler';
+// eslint-disable-next-line import/extensions -- vite
+import { Howl } from 'howler/dist/howler.core.min.js';
 import isObjectWithValues from './utils';
 
 export default {

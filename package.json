@@ -1,14 +1,15 @@
 {
   "name": "redux-sounds",
   "type": "module",
-  "version": "4.0.0-beta.2",
+  "version": "4.0.0-beta.3",
   "sideEffects": false,
   "description": "Sound effect middleware for Redux.",
-  "main": "dist/umd/redux-sounds.js",
+  "main": "dist/redux-sounds.umd.cjs",
+  "module": "./dist/redux-sounds.js",
   "exports": {
     ".": {
-      "import": "./dist/esm/redux-sounds.js",
-      "require": "./dist/umd/redux-sounds.js"
+      "import": "./dist/redux-sounds.js",
+      "require": "./dist/redux-sounds.umd.cjs"
     },
     "./package.json": "./package.json"
   },
@@ -21,7 +22,7 @@
   ],
   "scripts": {
     "lint": "eslint src",
-    "build": "NODE_OPTIONS='--experimental-vm-modules' webpack",
+    "build": "NODE_OPTIONS='--experimental-vm-modules' vite build",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest --collectCoverage",
     "coveralls": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
@@ -59,17 +60,12 @@
     "eslint-plugin-react": "^7.34.3",
     "eslint-plugin-react-hooks": "^4.6.2",
     "howler": "^2.2.4",
-    "import-fresh": "^3.3.0",
     "jest": "^29.7.0",
     "jest-config": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "jsdom": "^24.1.0",
     "prettier": "^3.3.2",
-    "swc-loader": "^0.2.6",
-    "terser-webpack-plugin": "^5.3.10",
-    "webpack": "^5.92.1",
-    "webpack-cli": "^5.1.4",
-    "webpack-merge": "^6.0.1"
+    "vite": "^5.3.3"
   },
   "peerDependencies": {
     "howler": "^2.0.0"

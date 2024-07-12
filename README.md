@@ -29,7 +29,7 @@ npm i -S redux-sounds howler
 
 #### Also available: UMD
 
-UMD builds are also available, for single-file usage or legacy browser support. Simply add `dist/umd/redux-sounds.js` to your file in a `<script>` tag. The middleware will be available under `ReduxSounds`.
+UMD builds are also available, for single-file usage or legacy browser support. Simply add `dist/redux-sounds.umd.cjs` to your file in a `<script>` tag. The middleware will be available under `ReduxSounds`.
 
 | Build | Browser support                                                                                             | Size         |
 | ----- | ----------------------------------------------------------------------------------------------------------- | ------------ |
