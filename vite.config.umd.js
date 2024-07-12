@@ -2,6 +2,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
+import swc from '@rollup/plugin-swc';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -11,6 +12,7 @@ const config = defineConfig({
       // Could also be a dictionary or array of multiple entry points
       entry: path.resolve(dirname, 'src/index.js'),
       name: 'ReduxSounds',
+      formats: ['umd'],
       // the proper extensions will be added
       fileName: 'redux-sounds'
     },
@@ -24,7 +26,18 @@ const config = defineConfig({
         globals: {
           'howler/dist/howler.core.min.js': 'Howler'
         }
-      }
+      },
+      plugins: [swc({
+        env: {
+          targets: '> 0.3%, defaults',
+          loose: true,
+          modules: false,
+          bugfixes: true,
+          shippedProposals: true,
+          coreJs: '3.37',
+          exclude: ['transform-typeof-symbol']
+        }
+      })]
     }
   }
 });
